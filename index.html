@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AGAP-TUBIG · Automated Water-Level Monitoring</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    :root {
+      --ink: #0b1c2f;
+      --mute: #5a7b9e;
+      --blue: #1f6fe0;
+      --edge: #c3d6ef
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 15% -10%, #dcebff, transparent 60%), radial-gradient(900px 500px at 100% 10%, #e4f0ff, transparent 60%), #eef5fc;
+      color: var(--ink);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 2rem;
+      overflow-x: hidden
+    }
+
+    .hero,
+    .dashboard-grid,
+    .footer {
+      position: relative;
+      z-index: 1
+    }
+
+    /* floating 3D orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: .45;
+      background: radial-gradient(circle at 30% 28%, #fff 0, #9cc6ff 35%, #2a6fd6 75%, #123f86 100%);
+      box-shadow: inset -12px -16px 30px rgba(10, 40, 100, .35), 0 30px 50px rgba(20, 60, 130, .18);
+      animation: float 9s ease-in-out infinite
+    }
+
+    .orb.o1 {
+      width: 150px;
+      height: 150px;
+      left: -40px;
+      top: 32%
+    }
+
+    .orb.o2 {
+      width: 90px;
+      height: 90px;
+      right: 6%;
+      top: 16%;
+      animation-delay: -3s
+    }
+
+    .orb.o3 {
+      width: 120px;
+      height: 120px;
+      right: -30px;
+      bottom: 12%;
+      animation-delay: -6s
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-26px)
+      }
+    }
+
+    nav {
+      background: linear-gradient(180deg, rgba(22, 40, 74, .94), rgba(11, 24, 48, .94));
+      padding: .9rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .12) inset, 0 6px 0 #081428, 0 18px 30px rgba(0, 20, 50, .25)
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 1.4rem;
+      flex-wrap: wrap;
+      max-width: 860px;
+      margin: 0 auto
+    }
+
+    nav ul li a {
+      color: #eef4ff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.02rem;
+      padding: .4rem .9rem;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      transition: .18s ease;
+      border: 1px solid transparent
+    }
+
+    nav ul li a i {
+      font-size: .9rem;
+      opacity: .8
+    }
+
+    nav ul li a:hover {
+      background: rgba(255, 255, 255, .1);
+      border-color: rgba(255, 255, 255, .18);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 0 rgba(0, 0, 0, .35)
+    }
+
+    .nav-login {
+      border: 1px solid rgba(255, 255, 255, .22) !important;
+      border-radius: 999px !important;
+      background: rgba(255, 255, 255, .08)
+    }
+
+    .hero {
+      text-align: center;
+      padding: 2.8rem 1.5rem 1.6rem;
+      margin-bottom: 2rem;
+      perspective: 800px
+    }
+
+    .hero-brand {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: .9rem;
+      margin-bottom: .6rem
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      color: #fff;
+      font-size: 1.5rem;
+      background: linear-gradient(135deg, #2f86ff, #0d2b4b);
+      transform: rotateX(18deg) rotateY(-22deg);
+      transition: transform .5s;
+      transform-style: preserve-3d;
+      box-shadow: -2px -2px 0 rgba(255, 255, 255, .35) inset, 6px 6px 0 #0a2342, 10px 10px 0 #071a33, 18px 24px 26px rgba(10, 40, 100, .35)
+    }
+
+    .hero-brand:hover .brand-mark {
+      transform: rotateX(0) rotateY(0) rotate(-6deg)
+    }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      background: linear-gradient(135deg, #0b2b5c, #2b78e6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 #c4d8f2) drop-shadow(0 4px 0 #b3cbee) drop-shadow(0 14px 12px rgba(11, 43, 92, .28))
+    }
+
+    .tagline {
+      color: #2c4c7a;
+      font-size: 1.1rem;
+      max-width: 720px;
+      margin: .2rem auto 0
+    }
+
+    .user-badge {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      color: #244d78;
+      font-size: .85rem;
+      margin-top: .8rem;
+      flex-wrap: wrap
+    }
+
+    .user-badge.show {
+      display: flex
+    }
+
+    .sms-status {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .25rem .7rem;
+      border-radius: 999px;
+      background: #e9f8ef;
+      color: #1c8b3c;
+      font-size: .75rem;
+      font-weight: 700;
+      box-shadow: 0 2px 0 #bfe3c9
+    }
+
+    .dashboard-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      /* ✅ Forces exactly 2 columns */
+      gap: 2rem;
+      width: 100%;
+      perspective: 1400px;
+    }
+
+    /* 3D cards */
+    .card {
+      --rx: 0deg;
+      --ry: 0deg;
+      --ty: 0px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border-radius: 28px;
+      padding: 1.7rem 1.5rem;
+      background: linear-gradient(145deg, #fff, #eaf3ff);
+      border: 1px solid rgba(255, 255, 255, .9);
+      transform-style: preserve-3d;
+      transform: rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--ty));
+      transition: transform .18s ease-out, box-shadow .25s;
+      box-shadow: 0 1px 0 #fff inset, 0 2px 0 #d6e5f8, 0 4px 0 #c9dbf2, 0 6px 0 #bdd2ee, 0 26px 34px -12px rgba(0, 40, 90, .32)
+    }
+
+    .card:hover {
+      --ty: -6px;
+      box-shadow: 0 1px 0 #fff inset, 0 2px 0 #d6e5f8, 0 4px 0 #c9dbf2, 0 6px 0 #bdd2ee, 0 38px 46px -14px rgba(0, 40, 90, .4)
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, .7), transparent 48%)
+    }
+
+    .card:hover::after {
+      opacity: 1
+    }
+
+    .card-header,
+    .card-value,
+    .reading-item,
+    .tank-wrap {
+      transform: translateZ(24px)
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-weight: 600;
+      font-size: .9rem;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: #2a4a7a;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, .05);
+      padding-bottom: .6rem
+    }
+
+    .card-header i {
+      font-size: 1.3rem;
+      color: var(--blue);
+      width: 2rem;
+      text-align: center;
+      filter: drop-shadow(0 3px 2px rgba(31, 111, 224, .35))
+    }
+
+    .card-value {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-bottom: .2rem;
+      word-break: break-word;
+      text-shadow: 0 2px 0 #d3e2f6
+    }
+
+    .card-sub {
+      font-size: .85rem;
+      color: #3f618b;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-top: .2rem
+    }
+
+    .badge {
+      background: rgba(31, 111, 224, .1);
+      padding: .15rem .8rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: .75rem;
+      color: var(--blue);
+      box-shadow: 0 2px 0 rgba(31, 111, 224, .18)
+    }
+
+    .sensor-card,
+    .tank-card {
+      grid-column: span 1;
+    }
+
+    /* Wide cards (chart, history) and status card: full width */
+    .wide-card,
+    .status-card {
+      grid-column: 1 / -1;
+    }
+
+    .wide-card,
+    .status-card {
+      grid-column: 1/-1
+    }
+
+    .status-card {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 2rem;
+      border-left: 8px solid #2b7aff
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      transform: translateZ(24px)
+    }
+
+    .status-left i {
+      font-size: 2rem;
+      color: var(--blue);
+      filter: drop-shadow(0 4px 3px rgba(0, 0, 0, .2))
+    }
+
+    .status-text {
+      font-weight: 600;
+      font-size: 1.2rem
+    }
+
+    .status-text span {
+      font-weight: 400;
+      color: #2c4c7a
+    }
+
+    .live-badge {
+      background: linear-gradient(180deg, #143a63, #0b2038);
+      color: #b8d6ff;
+      padding: .35rem 1.2rem;
+      border-radius: 60px;
+      font-size: .8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      letter-spacing: .5px;
+      box-shadow: 0 4px 0 #061425, 0 10px 14px rgba(0, 20, 50, .3);
+      transform: translateZ(30px)
+    }
+
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      background: #27d46a;
+      border-radius: 50%;
+      animation: pulse-dot 1.6s infinite;
+      box-shadow: 0 0 10px #27d46a
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: .45;
+        transform: scale(.8)
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2)
+      }
+    }
+
+    /* sensor readings */
+    .readings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: .9rem;
+      margin-top: .8rem
+    }
+
+    .reading-item {
+      background: linear-gradient(160deg, #fff, #e6f0ff);
+      border-radius: 16px;
+      padding: .7rem .9rem;
+      display: flex;
+      flex-direction: column;
+      gap: .15rem;
+      box-shadow: 0 1px 0 #fff inset, 0 3px 0 #c6d9f2, 0 10px 14px -4px rgba(20, 60, 130, .22)
+    }
+
+    .reading-label {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: var(--mute)
+    }
+
+    .reading-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.2
+    }
+
+    .reading-value small {
+      font-size: .85rem;
+      font-weight: 500;
+      color: #47658c;
+      margin-left: 2px
+    }
+
+    /* 3D water tank */
+    .tank-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 1rem;
+      flex: 1;
+      flex-wrap: wrap
+    }
+
+    .scene {
+      position: relative;
+      width: 160px;
+      height: 215px;
+      perspective: 700px
+    }
+
+    .tank {
+      --w1: #5db0ff;
+      --w2: #1b5bbf;
+      position: absolute;
+      left: 20px;
+      top: 14px;
+      width: 120px;
+      height: 170px;
+      transform-style: preserve-3d;
+      transform: rotateX(-16deg) rotateY(30deg);
+      animation: spin 20s linear infinite
+    }
+
+    .tank[data-s=warning] {
+      --w1: #ffcb5c;
+      --w2: #d98a0b
+    }
+
+    .tank[data-s=danger] {
+      --w1: #ff7b7b;
+      --w2: #c42b2b
+    }
+
+    .scene:hover .tank {
+      animation-play-state: paused
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotateX(-16deg) rotateY(390deg)
+      }
+    }
+
+    .g {
+      position: absolute;
+      inset: 0;
+      border: 2px solid rgba(255, 255, 255, .75);
+      background: rgba(190, 220, 255, .14);
+      box-shadow: inset 0 0 22px rgba(255, 255, 255, .4)
+    }
+
+    .g.f {
+      transform: translateZ(60px)
+    }
+
+    .g.b {
+      transform: rotateY(180deg) translateZ(60px)
+    }
+
+    .g.l {
+      transform: rotateY(-90deg) translateZ(60px)
+    }
+
+    .g.r {
+      transform: rotateY(90deg) translateZ(60px)
+    }
+
+    .g.bt {
+      inset: auto;
+      left: 0;
+      top: 110px;
+      width: 120px;
+      height: 120px;
+      transform: rotateX(90deg);
+      background: rgba(120, 160, 210, .35)
+    }
+
+    .water {
+      position: absolute;
+      left: 4px;
+      bottom: 4px;
+      width: 112px;
+      height: calc(var(--fill, 0)*1.62px);
+      transform-style: preserve-3d;
+      transition: height 1.2s cubic-bezier(.3, .8, .3, 1)
+    }
+
+    .w {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(var(--w1), var(--w2));
+      opacity: .82
+    }
+
+    .w.f {
+      transform: translateZ(56px)
+    }
+
+    .w.b {
+      transform: rotateY(180deg) translateZ(56px)
+    }
+
+    .w.l {
+      transform: rotateY(-90deg) translateZ(56px)
+    }
+
+    .w.r {
+      transform: rotateY(90deg) translateZ(56px)
+    }
+
+    .w.t {
+      inset: auto;
+      left: 0;
+      top: -56px;
+      width: 112px;
+      height: 112px;
+      transform: rotateX(90deg);
+      background: var(--w1);
+      opacity: .95
+    }
+
+    .shadow {
+      position: absolute;
+      left: 14px;
+      bottom: 0;
+      width: 132px;
+      height: 28px;
+      border-radius: 50%;
+      background: radial-gradient(rgba(0, 30, 70, .4), transparent 70%);
+      filter: blur(4px)
+    }
+
+    .tank-info {
+      text-align: center
+    }
+
+    .tank-pct {
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1.1;
+      text-shadow: 0 2px 0 #d3e2f6, 0 8px 12px rgba(20, 60, 130, .25)
+    }
+
+    /* centered sensor + tank cards */
+    .sensor-card,
+    .tank-card {
+      text-align: center;
+      align-items: center
+    }
+
+    .sensor-card .card-header,
+    .tank-card .card-header {
+      justify-content: center;
+      width: 100%
+    }
+
+    .sensor-card .badge,
+    .tank-card .badge {
+      margin-left: 0 !important
+    }
+
+    .sensor-card .readings-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%
+    }
+
+    .sensor-card .reading-item {
+      flex: 1 1 140px;
+      max-width: 180px;
+      align-items: center
+    }
+
+    .sensor-card .card-sub {
+      justify-content: center
+    }
+
+    .tank-card .tank-wrap {
+      justify-content: center;
+      gap: 2.5rem;
+      width: 100%
+    }
+
+    /* history */
+    .history-wrap {
+      overflow-x: auto;
+      transform: translateZ(14px)
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px
+    }
+
+    .history-table th,
+    .history-table td {
+      padding: .75rem .65rem;
+      text-align: left;
+      border-bottom: 1px solid #e1ebf7;
+      font-size: .88rem
+    }
+
+    .history-table th {
+      color: #2a4a7a;
+      background: #f1f7ff
+    }
+
+    .history-table tbody tr:hover {
+      background: #f4f9ff
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .2rem .7rem;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 700;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, .1)
+    }
+
+    .pill-safe {
+      background: #e2f3e4;
+      color: #1c8b3c
+    }
+
+    .pill-warning {
+      background: #fff1d6;
+      color: #a96800
+    }
+
+    .pill-danger {
+      background: #ffe3e3;
+      color: #bc2c2c
+    }
+
+    .chart-box {
+      position: relative;
+      height: 330px;
+      transform: translateZ(14px)
+    }
+
+    .notice {
+      border-radius: 16px;
+      padding: 1rem 1.1rem;
+      background: #eef7ff;
+      border: 1px solid #d7eaff;
+      color: #244d78;
+      font-size: .9rem;
+      box-shadow: 0 3px 0 #cfe3f7
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.1rem;
+      transform: translateZ(18px)
+    }
+
+    .info-item {
+      border-radius: 18px;
+      padding: 1.15rem;
+      border: 1px solid #e3ebf5;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, .08), 0 14px 18px -8px rgba(0, 30, 70, .2);
+      transition: transform .2s
+    }
+
+    .info-item:hover {
+      transform: translateY(-4px)
+    }
+
+    .info-item h3 {
+      display: flex;
+      gap: .55rem;
+      align-items: center;
+      margin-bottom: .4rem;
+      font-size: 1rem
+    }
+
+    .info-item p {
+      font-size: .85rem;
+      color: #47658c
+    }
+
+    .hotline {
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      padding: .9rem;
+      border: 1px solid #e2eaf4;
+      border-radius: 15px;
+      margin-bottom: .7rem;
+      background: #fff;
+      transform: translateZ(18px);
+      box-shadow: 0 3px 0 #d3e2f4
+    }
+
+    .hotline i {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: #edf5ff;
+      color: var(--blue)
+    }
+
+    .hotline strong {
+      display: block
+    }
+
+    .hotline span {
+      font-size: .82rem;
+      color: var(--mute)
+    }
+
+    /* login modal + buttons */
+    .login-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(5, 20, 40, .62);
+      z-index: 1000;
+      perspective: 1000px
+    }
+
+    .login-modal.show {
+      display: flex
+    }
+
+    .login-panel {
+      width: min(560px, 100%);
+      background: linear-gradient(145deg, #fff, #eef5ff);
+      border-radius: 24px;
+      padding: 1.5rem;
+      box-shadow: 0 6px 0 #bdd2ee, 0 40px 80px rgba(0, 0, 0, .35);
+      animation: tiltIn .45s cubic-bezier(.2, .9, .3, 1)
+    }
+
+    @keyframes tiltIn {
+      from {
+        opacity: 0;
+        transform: rotateX(24deg) translateY(40px) scale(.94)
+      }
+    }
+
+    .login-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1rem
+    }
+
+    .close-btn {
+      border: 0;
+      background: #f1f5f9;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #cfd8e3
+    }
+
+    .close-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #cfd8e3
+    }
+
+    .login-grid {
+      display: grid;
+      gap: .9rem
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: .35rem
+    }
+
+    .field label {
+      font-size: .8rem;
+      font-weight: 700;
+      color: #36587f
+    }
+
+    .field input {
+      width: 100%;
+      padding: .8rem .9rem;
+      border: 1px solid #d1e0f2;
+      border-radius: 12px;
+      outline: none;
+      font: inherit;
+      background: #fff;
+      box-shadow: inset 0 3px 5px rgba(20, 60, 130, .08)
+    }
+
+    .field input:focus {
+      border-color: #4b91ee;
+      box-shadow: inset 0 3px 5px rgba(20, 60, 130, .08), 0 0 0 3px rgba(75, 145, 238, .18)
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: .75rem 1rem;
+      cursor: pointer;
+      font-weight: 700;
+      font-family: inherit;
+      transition: transform .08s, box-shadow .08s
+    }
+
+    .btn:active {
+      transform: translateY(4px)
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #3c8bff, #1f6fe0);
+      color: #fff;
+      box-shadow: 0 5px 0 #144a9e, 0 12px 16px rgba(20, 74, 158, .3)
+    }
+
+    .btn-primary:active {
+      box-shadow: 0 1px 0 #144a9e
+    }
+
+    .btn-secondary {
+      background: linear-gradient(180deg, #f6faff, #e2eefc);
+      color: #174c91;
+      box-shadow: 0 5px 0 #b9cfec, 0 12px 16px rgba(20, 74, 158, .15)
+    }
+
+    .btn-secondary:active {
+      box-shadow: 0 1px 0 #b9cfec
+    }
+
+    .profile-actions {
+      margin-top: 1rem;
+      display: flex;
+      gap: .9rem;
+      flex-wrap: wrap
+    }
+
+    .footer {
+      max-width: 1000px;
+      margin: 2.5rem auto 0;
+      text-align: center;
+      font-size: .8rem;
+      color: #5f7fa0;
+      border-top: 1px solid #d6e1ee;
+      padding: 1.5rem 1rem 0
+    }
+
+    .text-muted {
+      color: var(--mute);
+      font-weight: 400
+    }
+
+    .status-safe {
+      color: #1c8b3c
+    }
+
+    .status-warning {
+      color: #c97d0e
+    }
+
+    .status-danger {
+      color: #bc2c2c
+    }
+
+    .bg-safe {
+      background: #e2f3e4
+    }
+
+    .bg-warning {
+      background: #fff1d6
+    }
+
+    .bg-danger {
+      background: #ffe3e3
+    }
+
+    @media(max-width:700px) {
+      .hero h1 {
+        font-size: 2rem
+      }
+
+      .dashboard-grid {
+        gap: 1.4rem;
+        padding: 0 1rem
+      }
+
+      .card-value {
+        font-size: 2.2rem
+      }
+
+      .sensor-card,
+      .tank-card {
+        grid-column: 1/-1
+      }
+
+      .status-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .8rem;
+        padding: 1.2rem 1.5rem
+      }
+
+      nav ul {
+        gap: .4rem
+      }
+
+      nav ul li a {
+        font-size: .9rem;
+        padding: .35rem .6rem
+      }
+
+      .orb {
+        display: none
+      }
+    }
+
+    @media(max-width:450px) {
+      .hero h1 {
+        font-size: 1.6rem
+      }
+
+      .card-value {
+        font-size: 1.8rem
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      .tank,
+      .orb,
+      .live-dot,
+      .login-panel {
+        animation: none
+      }
+
+      .card {
+        transition: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
+
+  <nav>
+    <ul>
+      <li><a href="#dashboard"><i class="fas fa-water"></i> Dashboard</a></li>
+      <li><a href="#history"><i class="fas fa-clock-rotate-left"></i> History</a></li>
+      <li><a href="#safety"><i class="fas fa-shield-heart"></i> Safety</a></li>
+      <li><a href="#hotlines"><i class="fas fa-phone"></i> Hotlines</a></li>
+      <li><a href="#evacuation"><i class="fas fa-person-shelter"></i> Evacuation</a></li>
+      <li><a href="#" class="nav-login" id="loginButton"><i class="fas fa-user"></i> Login</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero" id="dashboard">
+    <div class="hero-brand">
+      <span class="brand-mark"><i class="fas fa-droplet"></i></span>
+      <h1>AGAP-TUBIG</h1>
+    </div>
+    <p class="tagline"><strong>Automated Guidance and Alert Platform for Water-Level Monitoring</strong><br>
+      Real-time water-level monitoring, historical records, safety guidance, and alert-ready notifications.</p>
+    <div class="user-badge" id="userBadge">
+      <i class="fas fa-user-circle"></i><span id="userLabel"></span>
+      <span class="sms-status"><i class="fas fa-comment-sms"></i> SMS alerts enabled</span>
+    </div>
+  </header>
+
+  <div class="dashboard-grid">
+    <div class="card sensor-card">
+      <div class="card-header"><i class="fas fa-microchip"></i> Sensor Readings <span class="badge"
+          style="margin-left:auto;">live</span></div>
+      <div class="readings-grid">
+        <div class="reading-item"><span class="reading-label">Raw Value</span><span class="reading-value"
+            id="rawValue">—</span></div>
+        <div class="reading-item"><span class="reading-label">Tank Full</span><span class="reading-value"
+            id="tankFull">— <small>%</small></span></div>
+        <div class="reading-item"><span class="reading-label">Water Height</span><span class="reading-value"
+            id="waterHeight">— <small>cm</small></span></div>
+        <div class="reading-item"><span class="reading-label">Water Level</span><span class="reading-value"
+            id="waterLevelM">— <small>m</small></span></div>
+        <div class="reading-item"><span class="reading-label">Water Level</span><span class="reading-value"
+            id="waterLevelFt">— <small>ft</small></span></div>
+      </div>
+      <div class="card-sub" style="margin-top:1rem;">
+        <i class="fas fa-microchip" style="color:#2f6eb0;"></i> Sensor ID: <span id="sensorId">—</span>
+        <span class="badge" id="updateTimeBadge">updating…</span>
+      </div>
+    </div>
+
+    <div class="card tank-card">
+      <div class="card-header"><i class="fas fa-cube"></i> Tank Model <span class="badge" style="margin-left:auto;">3D ·
+          hover to pause</span></div>
+      <div class="tank-wrap">
+        <div class="scene">
+          <div class="tank" id="tank" data-s="safe">
+            <div class="g f"></div>
+            <div class="g b"></div>
+            <div class="g l"></div>
+            <div class="g r"></div>
+            <div class="g bt"></div>
+            <div class="water" id="water">
+              <div class="w f"></div>
+              <div class="w b"></div>
+              <div class="w l"></div>
+              <div class="w r"></div>
+              <div class="w t"></div>
+            </div>
+          </div>
+          <div class="shadow"></div>
+        </div>
+        <div class="tank-info">
+          <div class="tank-pct" id="tankPct">—%</div>
+          <div class="card-sub" style="justify-content:center;margin-bottom:.5rem;">tank full</div>
+          <span class="status-pill pill-safe" id="tankPill">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card status-card" id="statusCard">
+      <div class="status-left">
+        <i class="fas fa-shield-alt" id="statusIcon"></i>
+        <div class="status-text">System status · <span id="statusText">loading…</span></div>
+      </div>
+      <div class="live-badge"><span class="live-dot"></span> LIVE · <span id="lastUpdateLabel">now</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><i class="fas fa-battery-three-quarters"></i> Battery</div>
+      <div class="card-value" style="font-size:2rem;">94<span style="font-size:1.2rem;">%</span></div>
+      <div class="card-sub"><i class="fas fa-check-circle" style="color:#1c8b3c;"></i> healthy</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><i class="fas fa-clock"></i> Last reading</div>
+      <div class="card-value" style="font-size:1.6rem;font-weight:500;" id="timestampDisplay">—</div>
+      <div class="card-sub"><i class="fas fa-sync-alt fa-fw"></i> auto‑update</div>
+    </div>
+  </div>
+
+  <section class="dashboard-grid" id="history" style="margin-top:2rem;">
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-chart-line"></i> Water-Level Trend <span class="badge"
+          style="margin-left:auto;">historical</span></div>
+      <div class="chart-box"><canvas id="waterChart"></canvas></div>
+    </div>
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-database"></i> Recent Water-Level History <span class="badge"
+          style="margin-left:auto;">latest 20</span></div>
+      <div class="history-wrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Date / Time</th>
+              <th>Raw</th>
+              <th>Full (%)</th>
+              <th>Level (m)</th>
+              <th>Level (ft)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr>
+              <td colspan="6" class="text-muted">Loading history…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="dashboard-grid" id="safety" style="margin-top:2rem;">
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-shield-heart"></i> AGAP-TUBIG Safety Guide</div>
+      <div class="info-grid">
+        <div class="info-item bg-safe">
+          <h3 class="status-safe"><i class="fas fa-circle-check"></i> SAFE</h3>
+          <p>Water level is within the safe range. Continue monitoring the live reading and stay alert to changes in
+            weather and local advisories.</p>
+        </div>
+        <div class="info-item bg-warning">
+          <h3 class="status-warning"><i class="fas fa-triangle-exclamation"></i> WARNING</h3>
+          <p>Water level is rising and may become hazardous. Prepare essential items, monitor SMS alerts, and be ready
+            to follow evacuation instructions.</p>
+        </div>
+        <div class="info-item bg-danger">
+          <h3 class="status-danger"><i class="fas fa-circle-exclamation"></i> DANGER</h3>
+          <p>Critical water level. Follow local emergency instructions and proceed to the designated evacuation area
+            when instructed.</p>
+        </div>
+      </div>
+      <p class="notice" style="margin-top:1.2rem;"><i class="fas fa-bell"></i>
+        <strong>SMS Alert:</strong> After a user logs in with a registered mobile number and address,
+        the system can send warning/danger notifications through the configured SMS service.
+      </p>
+    </div>
+  </section>
+
+  <section class="dashboard-grid" style="margin-top:2rem;">
+    <div class="card" id="hotlines" style="grid-column:span 2;">
+      <div class="card-header"><i class="fas fa-phone-volume"></i> Emergency Hotlines</div>
+      <div class="hotline"><i class="fas fa-phone"></i>
+        <div><strong>911</strong><span>National emergency hotline</span></div>
+      </div>
+      <div class="hotline"><i class="fas fa-building-shield"></i>
+        <div><strong>Local DRRMO</strong><span>Replace with your barangay/city DRRMO number</span></div>
+      </div>
+      <div class="hotline"><i class="fas fa-fire-extinguisher"></i>
+        <div><strong>BFP / Fire Station</strong><span>Replace with your local fire station number</span></div>
+      </div>
+      <div class="hotline"><i class="fas fa-user-shield"></i>
+        <div><strong>PNP</strong><span>Replace with your local police station number</span></div>
+      </div>
+    </div>
+    <div class="card" id="evacuation" style="grid-column:span 2;">
+      <div class="card-header"><i class="fas fa-person-shelter"></i> Evacuation Information</div>
+      <div class="notice" style="transform:translateZ(18px);"><strong>Designated Evacuation Center</strong><br>
+        Add the official evacuation center name and address for your barangay here.</div>
+      <div class="notice" style="margin-top:.8rem;transform:translateZ(18px);"><i class="fas fa-route"></i>
+        <strong>Evacuation Route</strong><br>
+        Add a verified route/map link and assembly point here. Use official local DRRMO information.
+      </div>
+      <p class="text-muted" style="margin-top:.8rem;font-size:.8rem;">Do not rely on this placeholder information during
+        an emergency. Replace it with verified local data.</p>
+    </div>
+  </section>
+
+  <div class="footer"><i class="fas fa-database" style="margin-right:.4rem;"></i> data from Supabase · connected via
+    real-time websocket</div>
+
+  <div class="login-modal" id="loginModal" aria-hidden="true">
+    <div class="login-panel">
+      <div class="login-head">
+        <div>
+          <h2><i class="fas fa-droplet" style="color:#1f6fe0;"></i> AGAP-TUBIG Login</h2>
+          <p class="text-muted">Register your mobile number and location so the system knows where to send alerts.</p>
+        </div>
+        <button class="close-btn" id="closeLogin" aria-label="Close">&times;</button>
+      </div>
+      <div class="login-grid">
+        <div class="field"><label for="userPhone">Mobile Number *</label><input id="userPhone" type="tel"
+            placeholder="09XXXXXXXXX" autocomplete="tel"></div>
+        <div class="field"><label for="userAddress">Address / Barangay *</label><input id="userAddress" type="text"
+            placeholder="Barangay, City/Municipality" autocomplete="street-address"></div>
+        <div class="field"><label for="userName">Name (optional)</label><input id="userName" type="text"
+            placeholder="Your name"></div>
+        <div class="field"><label for="userEmail">Email (optional)</label><input id="userEmail" type="email"
+            placeholder="you@example.com"></div>
+        <div class="profile-actions">
+          <button class="btn btn-primary" id="saveProfile"><i class="fas fa-right-to-bracket"></i> Login / Save</button>
+          <button class="btn btn-secondary" id="demoProfile"><i class="fas fa-flask"></i> Demo Login</button>
+        </div>
+        <p id="loginMessage" class="text-muted" style="font-size:.82rem;"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+      const supabaseUrl = "https://gamholrhodhernfmxlts.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhbWhvbHJob2RoZXJuZm14bHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzMzI4NDYsImV4cCI6MjEwMDkwODg0Nn0.vJr5WtIASv_auQB4sDP33uVzDdrGWY3G89P8lSVQTf4";
+      const restUrl = `${supabaseUrl}/rest/v1/water_levels?select=*&order=id.desc&limit=20`;
+      const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+      const $ = id => document.getElementById(id);
+
+      const rawValue = $('rawValue'), tankFull = $('tankFull'), waterHeight = $('waterHeight'), waterLevelM = $('waterLevelM'), waterLevelFt = $('waterLevelFt'),
+        statusText = $('statusText'), statusCard = $('statusCard'), statusIcon = $('statusIcon'), timestampDisplay = $('timestampDisplay'),
+        lastUpdateLabel = $('lastUpdateLabel'), sensorIdSpan = $('sensorId'), updateTimeBadge = $('updateTimeBadge'), historyBody = $('historyBody'),
+        userBadge = $('userBadge'), userLabel = $('userLabel'), loginModal = $('loginModal'), loginButton = $('loginButton'), closeLogin = $('closeLogin'),
+        saveProfile = $('saveProfile'), demoProfile = $('demoProfile'), loginMessage = $('loginMessage'),
+        tank = $('tank'), water = $('water'), tankPct = $('tankPct'), tankPill = $('tankPill');
+
+      // Track last inserted ID to avoid duplicate updates
+      let lastInsertedId = null;
+      let realtimeConnected = false;
+
+      function formatTime(iso) {
+        if (!iso) return '—';
+        try { return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+        catch (_) { return iso; }
+      }
+
+      function statusMeta(status) {
+        const s = String(status || '').toLowerCase();
+        if (s.includes('danger')) return { label: 'Danger', cls: 'pill-danger' };
+        if (s.includes('warning')) return { label: 'Warning', cls: 'pill-warning' };
+        return { label: 'Safe', cls: 'pill-safe' };
+      }
+
+      function setTank(percent, status) {
+        const m = statusMeta(status);
+        tank.dataset.s = m.label.toLowerCase();
+        water.style.setProperty('--fill', Math.min(100, Math.max(0, percent)));
+        tankPct.textContent = percent.toFixed(1) + '%';
+        tankPill.textContent = m.label;
+        tankPill.className = 'status-pill ' + m.cls;
+      }
+
+      function updateDashboard(data) {
+        if (!data || data.length === 0) { statusText.textContent = '⚠️ No data'; statusText.style.color = '#bc2c2c'; return; }
+        const record = data[0];
+        const raw = parseInt(record.raw_value) || 0;
+        const percent = parseFloat(record.percent_full) || 0;
+        const levelM = parseFloat(record.sensor_value) || 0;
+        const levelFt = parseFloat(record.water_level_ft) || (levelM * 3.28084);
+        const heightCm = levelM * 100;
+        const status = record.status || 'unknown';
+        const sensorId = record.sensor_id || record.id || '—';
+        const createdAt = record.created_at || record.timestamp || null;
+
+        rawValue.textContent = raw;
+        tankFull.innerHTML = `${percent.toFixed(1)} <small>%</small>`;
+        waterHeight.innerHTML = `${heightCm.toFixed(2)} <small>cm</small>`;
+        waterLevelM.innerHTML = `${levelM.toFixed(3)} <small>m</small>`;
+        waterLevelFt.innerHTML = `${levelFt.toFixed(2)} <small>ft</small>`;
+        sensorIdSpan.textContent = sensorId;
+
+        const timeStr = createdAt ? formatTime(createdAt) : new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        timestampDisplay.textContent = timeStr; lastUpdateLabel.textContent = timeStr; updateTimeBadge.textContent = `⏱ ${timeStr}`;
+
+        const s = status.toLowerCase();
+        let statusDisplay = status, iconClass = 'fas fa-shield-alt', statusColor = '#1c8b3c', cardBg = '';
+        if (s.includes('safe')) { statusDisplay = '🟢 Safe'; iconClass = 'fas fa-check-circle'; statusColor = '#1c8b3c'; cardBg = 'bg-safe'; }
+        else if (s.includes('warning')) { statusDisplay = '🟡 Warning'; iconClass = 'fas fa-exclamation-triangle'; statusColor = '#c97d0e'; cardBg = 'bg-warning'; }
+        else if (s.includes('danger')) { statusDisplay = '🔴 Danger'; iconClass = 'fas fa-times-circle'; statusColor = '#bc2c2c'; cardBg = 'bg-danger'; }
+
+        statusText.textContent = statusDisplay; statusText.style.color = statusColor;
+        statusIcon.className = iconClass; statusIcon.style.color = statusColor;
+        statusCard.classList.remove('bg-safe', 'bg-warning', 'bg-danger');
+        if (cardBg) statusCard.classList.add(cardBg);
+        statusCard.style.borderLeftColor = statusColor;
+        setTank(percent, status);
+      }
+
+      // ---------- user profile ----------
+      function getProfile() { try { return JSON.parse(localStorage.getItem('agapTubigProfile') || 'null'); } catch (_) { return null; } }
+      function renderProfile() {
+        const p = getProfile();
+        if (!p) { userBadge.classList.remove('show'); return; }
+        userBadge.classList.add('show');
+        userLabel.textContent = p.name ? `${p.name} · ${p.phone}` : p.phone;
+      }
+      function openLogin() {
+        loginModal.classList.add('show'); loginModal.setAttribute('aria-hidden', 'false');
+        const p = getProfile();
+        if (p) { $('userPhone').value = p.phone || ''; $('userAddress').value = p.address || ''; $('userName').value = p.name || ''; $('userEmail').value = p.email || ''; }
+      }
+      loginButton.addEventListener('click', e => { e.preventDefault(); openLogin(); });
+      closeLogin.addEventListener('click', () => loginModal.classList.remove('show'));
+      loginModal.addEventListener('click', e => { if (e.target === loginModal) loginModal.classList.remove('show'); });
+
+      saveProfile.addEventListener('click', () => {
+        const phone = $('userPhone').value.trim(), address = $('userAddress').value.trim();
+        if (!phone || !address) { loginMessage.textContent = 'Mobile number and address are required.'; loginMessage.style.color = '#bc2c2c'; return; }
+        localStorage.setItem('agapTubigProfile', JSON.stringify({
+          phone, address, name: $('userName').value.trim(), email: $('userEmail').value.trim(), smsAlerts: true, updatedAt: new Date().toISOString()
+        }));
+        renderProfile();
+        loginMessage.textContent = 'Profile saved. SMS alert registration is ready.'; loginMessage.style.color = '#1c8b3c';
+      });
+      demoProfile.addEventListener('click', () => {
+        localStorage.setItem('agapTubigProfile', JSON.stringify({ phone: '09123456789', address: 'Demo Barangay', name: 'Demo User', email: '', smsAlerts: true }));
+        renderProfile();
+        loginMessage.textContent = 'Demo profile loaded.'; loginMessage.style.color = '#1c8b3c';
+      });
+
+      // ---------- chart + history ----------
+      let waterChart = null;
+      function renderHistory(records) {
+        if (!records.length) { historyBody.innerHTML = '<tr><td colspan="6" class="text-muted">No history available.</td></tr>'; return; }
+        historyBody.innerHTML = records.map(r => {
+          const raw = parseInt(r.raw_value) || 0, percent = parseFloat(r.percent_full) || 0, levelM = parseFloat(r.sensor_value) || 0;
+          const levelFt = parseFloat(r.water_level_ft) || (levelM * 3.28084);
+          const stamp = r.created_at || r.timestamp || '';
+          const st = statusMeta(r.status);
+          return `<tr>
+        <td>${stamp ? new Date(stamp).toLocaleString('en-PH') : '—'}</td><td>${raw}</td><td>${percent.toFixed(1)}%</td>
+        <td>${levelM.toFixed(3)} m</td><td>${levelFt.toFixed(2)} ft</td>
+        <td><span class="status-pill ${st.cls}">${st.label}</span></td></tr>`;
+        }).join('');
+      }
+      function renderChart(records) {
+        const ordered = [...records].reverse();
+        const labels = ordered.map(r => { const t = r.created_at || r.timestamp; return t ? new Date(t).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' }) : '—'; });
+        const values = ordered.map(r => parseFloat(r.sensor_value) || 0);
+        const ctx = $('waterChart').getContext('2d');
+        if (waterChart) waterChart.destroy();
+        const grad = ctx.createLinearGradient(0, 0, 0, 330);
+        grad.addColorStop(0, 'rgba(31,111,224,.45)'); grad.addColorStop(1, 'rgba(31,111,224,0)');
+        waterChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels, datasets: [{
+              label: 'Water Level (m)', data: values, tension: .35, fill: true, borderColor: '#1f6fe0', borderWidth: 3,
+              backgroundColor: grad, pointRadius: 4, pointHoverRadius: 7, pointBackgroundColor: '#fff', pointBorderColor: '#1f6fe0', pointBorderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+            scales: { y: { beginAtZero: true, title: { display: true, text: 'Meters' } }, x: { title: { display: true, text: 'Time' } } },
+            plugins: { legend: { display: true } }
+          }
+        });
+      }
+
+      // ---------- data loading ----------
+      async function loadData() {
+        try {
+          const response = await fetch(restUrl, { headers: { apikey: supabaseKey, Authorization: "Bearer " + supabaseKey } });
+          if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+          const data = await response.json();
+          updateDashboard(data);
+          renderHistory(data);
+          renderChart(data);
+          console.log(`📊 Loaded ${data.length} records`);
+        } catch (error) {
+          console.warn('Fetch error:', error);
+          statusText.textContent = '⚠️ connection error'; statusText.style.color = '#bc2c2c';
+          statusIcon.className = 'fas fa-exclamation-circle'; statusIcon.style.color = '#bc2c2c';
+          updateTimeBadge.textContent = '⏱ offline';
+        }
+      }
+
+      // ---------- REAL-TIME SUBSCRIPTION ----------
+      function subscribeToRealtime() {
+        console.log('🔌 Connecting to Supabase Real-Time...');
+
+        const channel = supabaseClient
+          .channel('water_levels_realtime')
+          .on(
+            'postgres_changes',
+            { event: 'INSERT', schema: 'public', table: 'water_levels' },
+            (payload) => {
+              console.log('🔔 NEW DATA RECEIVED FROM SUPABASE:', payload.new);
+
+              // Prevent duplicate processing
+              if (payload.new.id === lastInsertedId) return;
+              lastInsertedId = payload.new.id;
+
+              // 1. Instantly update the dashboard with the new record
+              updateDashboard([payload.new]);
+
+              // 2. Refresh the history table and chart in the background
+              loadData();
+
+              // 3. Flash the LIVE indicator
+              updateTimeBadge.style.background = '#d4f7dc';
+              setTimeout(() => { updateTimeBadge.style.background = ''; }, 500);
+            }
+          )
+          .subscribe((status, err) => {
+            console.log('📡 Realtime status:', status);
+
+            if (status === 'SUBSCRIBED') {
+              realtimeConnected = true;
+              console.log('✅ SUBSCRIBED — real-time updates active!');
+              lastUpdateLabel.textContent = 'now';
+            } else if (status === 'CHANNEL_ERROR') {
+              realtimeConnected = false;
+              console.error('❌ Realtime channel error:', err);
+              console.error('   → Did you enable Replication for water_levels in Supabase?');
+              console.error('   → Database → Replication → supabase_realtime → toggle water_levels ON');
+            } else if (status === 'TIMED_OUT') {
+              realtimeConnected = false;
+              console.warn('⏱ Realtime timed out, will retry...');
+            } else if (status === 'CLOSED') {
+              realtimeConnected = false;
+              console.warn('🔌 Realtime channel closed');
+            }
+          });
+
+        return channel;
+      }
+
+      // ---------- 3D tilt on cards ----------
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduce) {
+        document.querySelectorAll('.card').forEach(card => {
+          const amp = card.classList.contains('wide-card') ? 2 : card.classList.contains('status-card') ? 3 : 9;
+          card.addEventListener('pointermove', e => {
+            if (e.pointerType === 'touch') return;
+            const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+            card.style.setProperty('--ry', ((x - .5) * amp).toFixed(2) + 'deg');
+            card.style.setProperty('--rx', ((.5 - y) * amp).toFixed(2) + 'deg');
+            card.style.setProperty('--mx', (x * 100) + '%'); card.style.setProperty('--my', (y * 100) + '%');
+          });
+          card.addEventListener('pointerleave', () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
+        });
+      }
+
+      // ---------- start ----------
+      renderProfile();
+      loadData();                    // Immediate first load
+      subscribeToRealtime();         // Real-time listener
+      setInterval(loadData, 3000);   // ⚡ Fast fallback poll every 3 seconds
+
+    })();
+  </script>
+</body>
+
+</html>
