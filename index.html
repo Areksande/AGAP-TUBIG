@@ -19,7 +19,10 @@
       --ink: #0b1c2f;
       --mute: #5a7b9e;
       --blue: #1f6fe0;
-      --edge: #c3d6ef
+      --edge: #c3d6ef;
+      --safe: #1c8b3c;
+      --warn: #c97d0e;
+      --danger: #bc2c2c
     }
 
     body {
@@ -101,9 +104,9 @@
       list-style: none;
       display: flex;
       justify-content: center;
-      gap: 1.4rem;
+      gap: 1.1rem;
       flex-wrap: wrap;
-      max-width: 860px;
+      max-width: 1050px;
       margin: 0 auto
     }
 
@@ -111,8 +114,8 @@
       color: #eef4ff;
       text-decoration: none;
       font-weight: 500;
-      font-size: 1.02rem;
-      padding: .4rem .9rem;
+      font-size: .97rem;
+      padding: .4rem .8rem;
       border-radius: 12px;
       display: inline-flex;
       align-items: center;
@@ -188,7 +191,7 @@
     .tagline {
       color: #2c4c7a;
       font-size: 1.1rem;
-      max-width: 720px;
+      max-width: 760px;
       margin: .2rem auto 0
     }
 
@@ -226,13 +229,11 @@
       padding: 0 1.5rem;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      /* ✅ Forces exactly 2 columns */
       gap: 2rem;
       width: 100%;
-      perspective: 1400px;
+      perspective: 1400px
     }
 
-    /* 3D cards */
     .card {
       --rx: 0deg;
       --ry: 0deg;
@@ -332,17 +333,13 @@
     .sensor-card,
     .tank-card {
       grid-column: span 1;
-    }
-
-    /* Wide cards (chart, history) and status card: full width */
-    .wide-card,
-    .status-card {
-      grid-column: 1 / -1;
+      text-align: center;
+      align-items: center
     }
 
     .wide-card,
     .status-card {
-      grid-column: 1/-1
+      grid-column: 1 / -1
     }
 
     .status-card {
@@ -417,10 +414,12 @@
 
     /* sensor readings */
     .readings-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: .9rem;
-      margin-top: .8rem
+      margin-top: .8rem;
+      width: 100%
     }
 
     .reading-item {
@@ -430,7 +429,10 @@
       display: flex;
       flex-direction: column;
       gap: .15rem;
-      box-shadow: 0 1px 0 #fff inset, 0 3px 0 #c6d9f2, 0 10px 14px -4px rgba(20, 60, 130, .22)
+      box-shadow: 0 1px 0 #fff inset, 0 3px 0 #c6d9f2, 0 10px 14px -4px rgba(20, 60, 130, .22);
+      flex: 1 1 140px;
+      max-width: 180px;
+      align-items: center
     }
 
     .reading-label {
@@ -454,14 +456,25 @@
       margin-left: 2px
     }
 
+    .sensor-card .card-header,
+    .tank-card .card-header {
+      justify-content: center;
+      width: 100%
+    }
+
+    .sensor-card .card-sub {
+      justify-content: center
+    }
+
     /* 3D water tank */
     .tank-wrap {
       display: flex;
       align-items: center;
-      justify-content: space-around;
-      gap: 1rem;
+      justify-content: center;
+      gap: 2.5rem;
       flex: 1;
-      flex-wrap: wrap
+      flex-wrap: wrap;
+      width: 100%
     }
 
     .scene {
@@ -604,47 +617,6 @@
       text-shadow: 0 2px 0 #d3e2f6, 0 8px 12px rgba(20, 60, 130, .25)
     }
 
-    /* centered sensor + tank cards */
-    .sensor-card,
-    .tank-card {
-      text-align: center;
-      align-items: center
-    }
-
-    .sensor-card .card-header,
-    .tank-card .card-header {
-      justify-content: center;
-      width: 100%
-    }
-
-    .sensor-card .badge,
-    .tank-card .badge {
-      margin-left: 0 !important
-    }
-
-    .sensor-card .readings-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      width: 100%
-    }
-
-    .sensor-card .reading-item {
-      flex: 1 1 140px;
-      max-width: 180px;
-      align-items: center
-    }
-
-    .sensor-card .card-sub {
-      justify-content: center
-    }
-
-    .tank-card .tank-wrap {
-      justify-content: center;
-      gap: 2.5rem;
-      width: 100%
-    }
-
     /* history */
     .history-wrap {
       overflow-x: auto;
@@ -780,7 +752,7 @@
       color: var(--mute)
     }
 
-    /* login modal + buttons */
+    /* login modal */
     .login-modal {
       position: fixed;
       inset: 0;
@@ -853,7 +825,8 @@
       color: #36587f
     }
 
-    .field input {
+    .field input,
+    .field textarea {
       width: 100%;
       padding: .8rem .9rem;
       border: 1px solid #d1e0f2;
@@ -864,7 +837,8 @@
       box-shadow: inset 0 3px 5px rgba(20, 60, 130, .08)
     }
 
-    .field input:focus {
+    .field input:focus,
+    .field textarea:focus {
       border-color: #4b91ee;
       box-shadow: inset 0 3px 5px rgba(20, 60, 130, .08), 0 0 0 3px rgba(75, 145, 238, .18)
     }
@@ -901,6 +875,12 @@
 
     .btn-secondary:active {
       box-shadow: 0 1px 0 #b9cfec
+    }
+
+    .btn-danger {
+      background: linear-gradient(180deg, #ff6b6b, #d32f2f);
+      color: #fff;
+      box-shadow: 0 5px 0 #9e1414, 0 12px 16px rgba(180, 20, 20, .3)
     }
 
     .profile-actions {
@@ -949,6 +929,631 @@
       background: #ffe3e3
     }
 
+    /* ---------- NEW: TABS ---------- */
+    .tab-bar {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+      padding: .4rem;
+      background: #e3edfa;
+      border-radius: 16px;
+      box-shadow: inset 0 2px 4px rgba(20, 60, 130, .08);
+      transform: translateZ(14px)
+    }
+
+    .tab-btn {
+      flex: 1 1 auto;
+      border: 0;
+      border-radius: 12px;
+      padding: .55rem .9rem;
+      font: inherit;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #36587f;
+      background: transparent;
+      transition: .18s
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(180deg, #fff, #eef5ff);
+      color: #123f86;
+      box-shadow: 0 3px 0 #bdd2ee, 0 6px 10px rgba(20, 60, 130, .12)
+    }
+
+    .tab-panel {
+      display: none
+    }
+
+    .tab-panel.active {
+      display: block;
+      animation: fadeTab .25s ease
+    }
+
+    @keyframes fadeTab {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+    }
+
+    /* ---------- NEW: LEGEND ---------- */
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: .6rem;
+      transform: translateZ(18px)
+    }
+
+    .legend-card {
+      border-radius: 18px;
+      padding: 1rem 1.1rem;
+      border: 2px solid transparent;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, .08), 0 14px 18px -8px rgba(0, 30, 70, .2)
+    }
+
+    .legend-card.safe {
+      background: #eefaf0;
+      border-color: #7fcf90
+    }
+
+    .legend-card.warning {
+      background: #fff8e8;
+      border-color: #f0bf5f
+    }
+
+    .legend-card.danger {
+      background: #fff0f0;
+      border-color: #f08a8a
+    }
+
+    .legend-card h4 {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .98rem;
+      margin-bottom: .35rem
+    }
+
+    .legend-swatch {
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      display: inline-block
+    }
+
+    .swatch-safe {
+      background: #27ae60
+    }
+
+    .swatch-warning {
+      background: #f39c12
+    }
+
+    .swatch-danger {
+      background: #e74c3c
+    }
+
+    .legend-meta {
+      font-size: .78rem;
+      color: #47658c;
+      display: flex;
+      flex-direction: column;
+      gap: .2rem;
+      margin-top: .4rem
+    }
+
+    .legend-meta b {
+      color: #123f86
+    }
+
+    /* ---------- NEW: ALARM / WARNING LIGHT ---------- */
+    .alarm-banner {
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.4rem;
+      border-radius: 18px;
+      margin: 0 auto 1.5rem;
+      max-width: 1100px;
+      width: calc(100% - 3rem);
+      font-weight: 700;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, .12), 0 18px 24px -10px rgba(0, 0, 0, .3);
+      animation: alarmPulse 1.4s infinite;
+      z-index: 90;
+      position: relative
+    }
+
+    .alarm-banner.show {
+      display: flex
+    }
+
+    .alarm-banner.warning {
+      background: linear-gradient(90deg, #fff4d6, #ffe6a8);
+      border: 2px solid #f0bf5f;
+      color: #7a4f00
+    }
+
+    .alarm-banner.danger {
+      background: linear-gradient(90deg, #ffe0e0, #ffb3b3);
+      border: 2px solid #e74c3c;
+      color: #8b1111
+    }
+
+    .alarm-banner i {
+      font-size: 1.8rem
+    }
+
+    .warning-light {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #ff3b3b;
+      box-shadow: 0 0 12px 4px rgba(255, 59, 59, .7);
+      animation: blinkLight .7s infinite alternate;
+      flex-shrink: 0
+    }
+
+    @keyframes blinkLight {
+      from {
+        opacity: 1
+      }
+
+      to {
+        opacity: .25
+      }
+    }
+
+    @keyframes alarmPulse {
+
+      0%,
+      100% {
+        transform: scale(1)
+      }
+
+      50% {
+        transform: scale(1.012)
+      }
+    }
+
+    .alarm-controls {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+      margin-top: .8rem
+    }
+
+    .alarm-controls .btn {
+      font-size: .78rem;
+      padding: .5rem .85rem
+    }
+
+    /* ---------- NEW: 3D HUMAN MODEL ---------- */
+    .human-scene {
+      position: relative;
+      width: 150px;
+      height: 230px;
+      margin: 0 auto;
+      perspective: 600px;
+      transform: translateZ(18px)
+    }
+
+    .human-model {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      animation: humanSpin 14s linear infinite
+    }
+
+    .human-scene:hover .human-model {
+      animation-play-state: paused
+    }
+
+    @keyframes humanSpin {
+      from {
+        transform: rotateY(0)
+      }
+
+      to {
+        transform: rotateY(360deg)
+      }
+    }
+
+    .human-part {
+      position: absolute;
+      background: linear-gradient(160deg, #8fc3ff, #2f6fd0);
+      border-radius: 40% 40% 45% 45%;
+      box-shadow: inset -3px -3px 6px rgba(0, 20, 60, .35), 0 4px 6px rgba(0, 20, 60, .25);
+      left: 50%
+    }
+
+    .human-head {
+      width: 34px;
+      height: 34px;
+      top: 6px;
+      margin-left: -17px;
+      border-radius: 50%
+    }
+
+    .human-torso {
+      width: 46px;
+      height: 78px;
+      top: 44px;
+      margin-left: -23px;
+      border-radius: 14px
+    }
+
+    .human-arm-l,
+    .human-arm-r {
+      width: 16px;
+      height: 66px;
+      top: 50px;
+      border-radius: 8px
+    }
+
+    .human-arm-l {
+      margin-left: -38px;
+      transform: rotate(6deg)
+    }
+
+    .human-arm-r {
+      margin-left: 22px;
+      transform: rotate(-6deg)
+    }
+
+    .human-leg-l,
+    .human-leg-r {
+      width: 18px;
+      height: 74px;
+      top: 122px;
+      border-radius: 8px
+    }
+
+    .human-leg-l {
+      margin-left: -22px
+    }
+
+    .human-leg-r {
+      margin-left: 6px
+    }
+
+    .human-water-line {
+      position: absolute;
+      left: -8px;
+      right: -8px;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, #1f6fe0, transparent);
+      border-radius: 4px;
+      box-shadow: 0 0 10px #1f6fe0;
+      transition: bottom .8s ease
+    }
+
+    .human-water-fill {
+      position: absolute;
+      left: -8px;
+      right: -8px;
+      bottom: 0;
+      background: rgba(31, 111, 224, .28);
+      border-radius: 0 0 12px 12px;
+      transition: height .8s ease;
+      backdrop-filter: blur(1px)
+    }
+
+    .human-label {
+      text-align: center;
+      font-size: .82rem;
+      color: #2a4a7a;
+      margin-top: .6rem;
+      font-weight: 700
+    }
+
+    .human-risk {
+      text-align: center;
+      font-size: .78rem;
+      color: #47658c;
+      max-width: 230px;
+      margin: .3rem auto 0
+    }
+
+    /* ---------- NEW: CHAT ---------- */
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      height: 340px;
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid #dfeaf7;
+      overflow: hidden;
+      transform: translateZ(18px);
+      box-shadow: 0 4px 0 #d3e2f4
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      background: linear-gradient(180deg, #f7fbff, #eef5ff)
+    }
+
+    .chat-msg {
+      max-width: 78%;
+      padding: .55rem .85rem;
+      border-radius: 14px;
+      font-size: .84rem;
+      line-height: 1.45;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, .06)
+    }
+
+    .chat-msg.user {
+      align-self: flex-end;
+      background: linear-gradient(180deg, #3c8bff, #1f6fe0);
+      color: #fff;
+      border-bottom-right-radius: 4px
+    }
+
+    .chat-msg.barangay {
+      align-self: flex-start;
+      background: #fff;
+      color: #123f86;
+      border: 1px solid #dbe8f8;
+      border-bottom-left-radius: 4px
+    }
+
+    .chat-msg .chat-meta {
+      display: block;
+      font-size: .65rem;
+      opacity: .7;
+      margin-top: .15rem
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: .5rem;
+      padding: .6rem;
+      background: #fff;
+      border-top: 1px solid #e3edf9
+    }
+
+    .chat-input-row input {
+      flex: 1;
+      border: 1px solid #d1e0f2;
+      border-radius: 10px;
+      padding: .6rem .8rem;
+      font: inherit;
+      outline: none
+    }
+
+    .chat-input-row input:focus {
+      border-color: #4b91ee;
+      box-shadow: 0 0 0 3px rgba(75, 145, 238, .15)
+    }
+
+    .chat-typing {
+      font-size: .72rem;
+      color: #5a7b9e;
+      padding: 0 1rem .3rem;
+      display: none
+    }
+
+    .chat-typing.show {
+      display: block
+    }
+
+    /* ---------- NEW: AI SEARCH ---------- */
+    .ai-search-row {
+      display: flex;
+      gap: .6rem;
+      margin-bottom: .9rem;
+      transform: translateZ(18px)
+    }
+
+    .ai-search-row input {
+      flex: 1;
+      padding: .7rem .9rem;
+      border: 1px solid #d1e0f2;
+      border-radius: 12px;
+      font: inherit;
+      outline: none
+    }
+
+    .ai-search-row input:focus {
+      border-color: #4b91ee;
+      box-shadow: 0 0 0 3px rgba(75, 145, 238, .18)
+    }
+
+    .ai-results {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      transform: translateZ(18px)
+    }
+
+    .ai-result {
+      border-radius: 14px;
+      padding: .8rem 1rem;
+      background: #f7fbff;
+      border: 1px solid #dfeaf7;
+      font-size: .84rem;
+      box-shadow: 0 2px 0 #dbe8f8
+    }
+
+    .ai-result strong {
+      display: block;
+      color: #123f86;
+      margin-bottom: .15rem
+    }
+
+    .ai-result span {
+      color: #47658c
+    }
+
+    .ai-disclaimer {
+      font-size: .72rem;
+      color: #7b96b5;
+      margin-top: .6rem;
+      font-style: italic
+    }
+
+    /* ---------- NEW: MOBILE APP ---------- */
+    .phone-mock {
+      width: 210px;
+      margin: 0 auto;
+      border-radius: 28px;
+      background: linear-gradient(160deg, #1b2e4d, #0b182e);
+      padding: 12px;
+      box-shadow: 0 10px 0 #07101f, 0 24px 40px rgba(0, 20, 50, .4);
+      transform: translateZ(20px)
+    }
+
+    .phone-screen {
+      border-radius: 18px;
+      background: linear-gradient(180deg, #eef5ff, #dcebff);
+      overflow: hidden;
+      height: 330px;
+      display: flex;
+      flex-direction: column
+    }
+
+    .phone-notch {
+      width: 80px;
+      height: 14px;
+      background: #0b182e;
+      border-radius: 0 0 12px 12px;
+      margin: 0 auto
+    }
+
+    .phone-app-header {
+      background: linear-gradient(135deg, #1f6fe0, #0d2b4b);
+      color: #fff;
+      padding: .55rem .8rem;
+      font-weight: 700;
+      font-size: .78rem;
+      display: flex;
+      align-items: center;
+      gap: .45rem
+    }
+
+    .phone-notif {
+      margin: .55rem;
+      background: #fff;
+      border-radius: 12px;
+      padding: .55rem .7rem;
+      font-size: .7rem;
+      box-shadow: 0 2px 6px rgba(20, 60, 130, .18);
+      border-left: 5px solid #f39c12;
+      animation: notifSlide .5s ease
+    }
+
+    .phone-notif.danger {
+      border-left-color: #e74c3c
+    }
+
+    @keyframes notifSlide {
+      from {
+        opacity: 0;
+        transform: translateX(30px)
+      }
+    }
+
+    .phone-notif b {
+      display: block;
+      color: #123f86;
+      font-size: .72rem
+    }
+
+    .phone-notif span {
+      color: #5a7b9e
+    }
+
+    .phone-content {
+      padding: 0 .55rem .55rem;
+      display: flex;
+      flex-direction: column;
+      gap: .45rem
+    }
+
+    .phone-stat {
+      background: #fff;
+      border-radius: 10px;
+      padding: .45rem .6rem;
+      font-size: .68rem;
+      display: flex;
+      justify-content: space-between;
+      box-shadow: 0 2px 0 #d3e2f4;
+      color: #36587f
+    }
+
+    .phone-stat b {
+      color: #123f86
+    }
+
+    /* video demo */
+    .video-frame {
+      position: relative;
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 6px 0 #bdd2ee, 0 30px 50px -16px rgba(0, 40, 90, .4);
+      transform: translateZ(18px);
+      background: #0b182e
+    }
+
+    .video-frame video {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #000
+    }
+
+    .video-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      height: 260px;
+      color: #b8d6ff;
+      font-size: .9rem;
+      text-align: center;
+      padding: 1rem;
+      background: radial-gradient(circle at 50% 40%, #1b3a63, #0b182e 70%)
+    }
+
+    .video-placeholder i {
+      font-size: 2.6rem;
+      opacity: .8
+    }
+
+    /* references list */
+    .ref-list {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      margin-top: .6rem;
+      transform: translateZ(18px)
+    }
+
+    .ref-item {
+      background: #f7fbff;
+      border: 1px solid #dfeaf7;
+      border-radius: 12px;
+      padding: .7rem .9rem;
+      font-size: .82rem;
+      color: #36587f;
+      box-shadow: 0 2px 0 #dbe8f8
+    }
+
+    .ref-item b {
+      color: #123f86
+    }
+
     @media(max-width:700px) {
       .hero h1 {
         font-size: 2rem
@@ -976,16 +1581,21 @@
       }
 
       nav ul {
-        gap: .4rem
+        gap: .3rem
       }
 
       nav ul li a {
-        font-size: .9rem;
-        padding: .35rem .6rem
+        font-size: .82rem;
+        padding: .32rem .5rem
       }
 
       .orb {
         display: none
+      }
+
+      .alarm-banner {
+        flex-wrap: wrap;
+        font-size: .85rem
       }
     }
 
@@ -1004,7 +1614,11 @@
       .tank,
       .orb,
       .live-dot,
-      .login-panel {
+      .login-panel,
+      .human-model,
+      .alarm-banner,
+      .warning-light,
+      .phone-notif {
         animation: none
       }
 
@@ -1023,13 +1637,33 @@
   <nav>
     <ul>
       <li><a href="#dashboard"><i class="fas fa-water"></i> Dashboard</a></li>
-      <li><a href="#history"><i class="fas fa-clock-rotate-left"></i> History</a></li>
+      <li><a href="#legend"><i class="fas fa-swatchbook"></i> Legend</a></li>
+      <li><a href="#levels"><i class="fas fa-layer-group"></i> Levels</a></li>
       <li><a href="#safety"><i class="fas fa-shield-heart"></i> Safety</a></li>
+      <li><a href="#drrmo"><i class="fas fa-tower-broadcast"></i> DRRMO</a></li>
+      <li><a href="#mobile"><i class="fas fa-mobile-screen"></i> App</a></li>
+      <li><a href="#chat"><i class="fas fa-comments"></i> Chat</a></li>
+      <li><a href="#ai"><i class="fas fa-robot"></i> AI Search</a></li>
       <li><a href="#hotlines"><i class="fas fa-phone"></i> Hotlines</a></li>
       <li><a href="#evacuation"><i class="fas fa-person-shelter"></i> Evacuation</a></li>
       <li><a href="#" class="nav-login" id="loginButton"><i class="fas fa-user"></i> Login</a></li>
     </ul>
   </nav>
+
+  <!-- ALARM / WARNING BANNER -->
+  <div class="alarm-banner" id="alarmBanner" role="alert" aria-live="assertive">
+    <span class="warning-light"></span>
+    <i class="fas fa-bell" id="alarmIcon"></i>
+    <div style="flex:1;min-width:180px;">
+      <div id="alarmTitle">WARNING · Water level rising</div>
+      <div id="alarmSub" style="font-weight:500;font-size:.82rem;opacity:.85;">Automatic alarm activated · DRRMO notified
+      </div>
+    </div>
+    <div class="alarm-controls">
+      <button class="btn btn-secondary" id="silenceAlarm"><i class="fas fa-volume-xmark"></i> Silence</button>
+      <button class="btn btn-danger" id="testAlarm"><i class="fas fa-bullhorn"></i> Test Alarm</button>
+    </div>
+  </div>
 
   <header class="hero" id="dashboard">
     <div class="hero-brand">
@@ -1041,9 +1675,12 @@
     <div class="user-badge" id="userBadge">
       <i class="fas fa-user-circle"></i><span id="userLabel"></span>
       <span class="sms-status"><i class="fas fa-comment-sms"></i> SMS alerts enabled</span>
+      <span class="sms-status" style="background:#e8f0ff;color:#1f6fe0;box-shadow:0 2px 0 #c3d6ef;"><i
+          class="fas fa-bell"></i> Push notifications enabled</span>
     </div>
   </header>
 
+  <!-- ====== DASHBOARD ====== -->
   <div class="dashboard-grid">
     <div class="card sensor-card">
       <div class="card-header"><i class="fas fa-microchip"></i> Sensor Readings <span class="badge"
@@ -1116,37 +1753,204 @@
     </div>
   </div>
 
-  <section class="dashboard-grid" id="history" style="margin-top:2rem;">
+  <!-- ====== 3D HUMAN MODEL + DASHBOARD TABS ====== -->
+  <section class="dashboard-grid" style="margin-top:2rem;">
     <div class="card wide-card">
-      <div class="card-header"><i class="fas fa-chart-line"></i> Water-Level Trend <span class="badge"
-          style="margin-left:auto;">historical</span></div>
-      <div class="chart-box"><canvas id="waterChart"></canvas></div>
-    </div>
-    <div class="card wide-card">
-      <div class="card-header"><i class="fas fa-database"></i> Recent Water-Level History <span class="badge"
-          style="margin-left:auto;">latest 20</span></div>
-      <div class="history-wrap">
-        <table class="history-table">
-          <thead>
-            <tr>
-              <th>Date / Time</th>
-              <th>Raw</th>
-              <th>Full (%)</th>
-              <th>Level (m)</th>
-              <th>Level (ft)</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="historyBody">
-            <tr>
-              <td colspan="6" class="text-muted">Loading history…</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="card-header"><i class="fas fa-person"></i> 3D Human Model · Water-Level Risk Visualizer</div>
+      <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center;justify-content:center;">
+        <div class="human-scene">
+          <div class="human-model" id="humanModel">
+            <div class="human-head"></div>
+            <div class="human-torso"></div>
+            <div class="human-arm-l"></div>
+            <div class="human-arm-r"></div>
+            <div class="human-leg-l"></div>
+            <div class="human-leg-r"></div>
+            <div class="human-water-fill" id="humanWaterFill" style="height:0%"></div>
+            <div class="human-water-line" id="humanWaterLine" style="bottom:0%"></div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:220px;text-align:center;">
+          <div class="human-label" id="humanLevelLabel">Water level: —</div>
+          <div class="human-risk" id="humanRiskText">Hover the model to pause rotation. The water line shows the current
+            level relative to a human figure.</div>
+          <div class="card-sub" style="justify-content:center;margin-top:.8rem;">
+            <span class="status-pill pill-safe" id="humanPill">—</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- ====== TABBED DASHBOARD SECTIONS ====== -->
+  <section class="dashboard-grid" id="history" style="margin-top:2rem;">
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-table-columns"></i> Dashboard Sections <span class="badge"
+          style="margin-left:auto;">tabbed view</span></div>
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn active" data-tab="trend" role="tab" aria-selected="true"><i class="fas fa-chart-line"></i>
+          Trend</button>
+        <button class="tab-btn" data-tab="table" role="tab" aria-selected="false"><i class="fas fa-database"></i>
+          History</button>
+        <button class="tab-btn" data-tab="levels" role="tab" aria-selected="false"><i class="fas fa-layer-group"></i>
+          Level Guide</button>
+      </div>
+
+      <!-- Trend tab -->
+      <div class="tab-panel active" id="tab-trend" role="tabpanel">
+        <div class="chart-box"><canvas id="waterChart"></canvas></div>
+      </div>
+
+      <!-- History tab -->
+      <div class="tab-panel" id="tab-table" role="tabpanel">
+        <div class="history-wrap">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Date / Time</th>
+                <th>Raw</th>
+                <th>Full (%)</th>
+                <th>Level (m)</th>
+                <th>Level (ft)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody">
+              <tr>
+                <td colspan="6" class="text-muted">Loading history…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Level Guide tab -->
+      <div class="tab-panel" id="tab-levels" role="tabpanel">
+        <div class="legend-grid">
+          <div class="legend-card safe">
+            <h4><span class="legend-swatch swatch-safe"></span> SAFE · 0 – 29 cm</h4>
+            <p>Water is within the normal channel. No immediate risk to people or property.</p>
+            <div class="legend-meta">
+              <span><b>Basis:</b> Below warning threshold based on sensor calibration</span>
+              <span><b>Risk:</b> Low — routine monitoring only</span>
+              <span><b>Action:</b> Continue monitoring, stay informed</span>
+            </div>
+          </div>
+          <div class="legend-card warning">
+            <h4><span class="legend-swatch swatch-warning"></span> WARNING · 30 – 59 cm</h4>
+            <p>Water is rising and may become hazardous within hours. Prepare for possible evacuation.</p>
+            <div class="legend-meta">
+              <span><b>Basis:</b> Threshold set with DRRMO and barangay officials</span>
+              <span><b>Risk:</b> Moderate — roads and low-lying areas may flood</span>
+              <span><b>Action:</b> Prepare go-bag, monitor alerts, secure belongings</span>
+            </div>
+          </div>
+          <div class="legend-card danger">
+            <h4><span class="legend-swatch swatch-danger"></span> DANGER · 60 cm and above</h4>
+            <p>Critical water level. Immediate danger to life and property. Evacuate when instructed.</p>
+            <div class="legend-meta">
+              <span><b>Basis:</b> Critical threshold validated with DRRMO / MDRRMO</span>
+              <span><b>Risk:</b> High — life-threatening flooding, rescue needed</span>
+              <span><b>Action:</b> Evacuate immediately, follow DRRMO instructions</span>
+            </div>
+          </div>
+        </div>
+        <p class="notice" style="margin-top:1.1rem;"><i class="fas fa-file-shield"></i>
+          <strong>Supporting documents:</strong> Water-level classifications are aligned with official DRRMO and
+          barangay memorandums. See the <a href="#references" style="color:#1f6fe0;font-weight:700;">References</a>
+          section for the full list of basis documents.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== WEBSITE LEGEND ====== -->
+  <section class="dashboard-grid" id="legend" style="margin-top:2rem;">
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-swatchbook"></i> Website Legend · Clear &amp; Consistent Indicators</div>
+      <div class="legend-grid">
+        <div class="legend-card safe">
+          <h4><span class="legend-swatch swatch-safe"></span> SAFE</h4>
+          <p>Green indicators. Water level is normal. No immediate action needed beyond monitoring.</p>
+          <div class="legend-meta">
+            <span><b>Color:</b> Green (#27ae60)</span>
+            <span><b>Pill:</b> <span class="status-pill pill-safe">Safe</span></span>
+            <span><b>Light:</b> Off</span>
+            <span><b>Buzzer:</b> Silent</span>
+          </div>
+        </div>
+        <div class="legend-card warning">
+          <h4><span class="legend-swatch swatch-warning"></span> WARNING</h4>
+          <p>Yellow indicators. Water is rising. Prepare essentials and monitor alerts closely.</p>
+          <div class="legend-meta">
+            <span><b>Color:</b> Amber (#f39c12)</span>
+            <span><b>Pill:</b> <span class="status-pill pill-warning">Warning</span></span>
+            <span><b>Light:</b> Blinking amber</span>
+            <span><b>Buzzer:</b> Short intermittent beeps</span>
+          </div>
+        </div>
+        <div class="legend-card danger">
+          <h4><span class="legend-swatch swatch-danger"></span> DANGER</h4>
+          <p>Red indicators. Critical water level. Evacuate immediately when instructed by DRRMO.</p>
+          <div class="legend-meta">
+            <span><b>Color:</b> Red (#e74c3c)</span>
+            <span><b>Pill:</b> <span class="status-pill pill-danger">Danger</span></span>
+            <span><b>Light:</b> Solid red</span>
+            <span><b>Buzzer:</b> Continuous loud alarm</span>
+          </div>
+        </div>
+      </div>
+      <p class="notice" style="margin-top:1.1rem;"><i class="fas fa-circle-info"></i> The legend is used
+        consistently across the dashboard, mobile app, chat, and alarm banners so users can easily understand every
+        indication.</p>
+    </div>
+  </section>
+
+  <!-- ====== SPECIFIC LEVELS & RISK BASIS ====== -->
+  <section class="dashboard-grid" id="levels" style="margin-top:2rem;">
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-layer-group"></i> Safe, Warning, and Danger Levels · Reliable Basis &amp;
+        Risks</div>
+      <div class="info-grid">
+        <div class="info-item bg-safe">
+          <h3 class="status-safe"><i class="fas fa-circle-check"></i> SAFE · 0 – 29 cm</h3>
+          <p>Water level is within the normal channel. No immediate risk to people or property.</p>
+          <div class="legend-meta">
+            <span><b>Reliable basis:</b> Below the warning threshold set during sensor calibration with barangay
+              officials.</span>
+            <span><b>Possible risks:</b> None to low. Slippery roads may occur during continuous rain.</span>
+            <span><b>When dangerous:</b> Only if combined with strong currents or structural damage.</span>
+          </div>
+        </div>
+        <div class="info-item bg-warning">
+          <h3 class="status-warning"><i class="fas fa-triangle-exclamation"></i> WARNING · 30 – 59 cm</h3>
+          <p>Water is rising and may become hazardous. Prepare essential items and be ready to evacuate.</p>
+          <div class="legend-meta">
+            <span><b>Reliable basis:</b> Threshold based on DRRMO advisories, historical flood records, and barangay
+              memorandums.</span>
+            <span><b>Possible risks:</b> Moderate flooding of low-lying roads, difficulty for vehicles and
+              pedestrians.</span>
+            <span><b>When dangerous:</b> If water continues to rise quickly or rain persists, it can escalate to
+              Danger.</span>
+          </div>
+        </div>
+        <div class="info-item bg-danger">
+          <h3 class="status-danger"><i class="fas fa-circle-exclamation"></i> DANGER · 60 cm and above</h3>
+          <p>Critical water level. Life-threatening flooding is possible. Evacuate immediately when instructed.</p>
+          <div class="legend-meta">
+            <span><b>Reliable basis:</b> Critical threshold validated with MDRRMO and barangay rescue teams.</span>
+            <span><b>Possible risks:</b> High — life-threatening flooding, property damage, need for rescue.</span>
+            <span><b>When dangerous:</b> Always considered dangerous. Do not attempt to cross floodwaters.</span>
+          </div>
+        </div>
+      </div>
+      <p class="notice" style="margin-top:1.1rem;"><i class="fas fa-file-signature"></i> These classifications are
+        supported by official memorandums and references. See the <a href="#references"
+          style="color:#1f6fe0;font-weight:700;">References</a> section below.</p>
+    </div>
+  </section>
+
+  <!-- ====== SAFETY GUIDE ====== -->
   <section class="dashboard-grid" id="safety" style="margin-top:2rem;">
     <div class="card wide-card">
       <div class="card-header"><i class="fas fa-shield-heart"></i> AGAP-TUBIG Safety Guide</div>
@@ -1168,12 +1972,185 @@
         </div>
       </div>
       <p class="notice" style="margin-top:1.2rem;"><i class="fas fa-bell"></i>
-        <strong>SMS Alert:</strong> After a user logs in with a registered mobile number and address,
-        the system can send warning/danger notifications through the configured SMS service.
+        <strong>Alarm &amp; notifications:</strong> When the water reaches <strong>Warning</strong> or
+        <strong>Danger</strong>, the site alarm triggers a warning light and buzzer. Push notifications are sent to the
+        mobile app, and DRRMO is automatically coordinated for faster response.
       </p>
+      <div class="alarm-controls">
+        <button class="btn btn-secondary" id="testWarning"><i class="fas fa-bell"></i> Simulate Warning Alarm</button>
+        <button class="btn btn-danger" id="testDanger"><i class="fas fa-bullhorn"></i> Simulate Danger Alarm</button>
+        <button class="btn btn-secondary" id="clearAlarm"><i class="fas fa-volume-xmark"></i> Clear / Silence</button>
+      </div>
     </div>
   </section>
 
+  <!-- ====== DRRMO COORDINATION ====== -->
+  <section class="dashboard-grid" id="drrmo" style="margin-top:2rem;">
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-tower-broadcast"></i> DRRMO Coordination · Fast Emergency Response</div>
+      <div class="info-grid">
+        <div class="info-item bg-safe">
+          <h3 class="status-safe"><i class="fas fa-link"></i> Automatic Coordination</h3>
+          <p>When the alarm reaches Warning or Danger, the system automatically sends an alert to the MDRRMO and
+            barangay rescue team through the configured SMS and push notification channel.</p>
+        </div>
+        <div class="info-item bg-warning">
+          <h3 class="status-warning"><i class="fas fa-satellite-dish"></i> Real-Time Monitoring</h3>
+          <p>DRRMO personnel can view the same live dashboard and historical data, ensuring a shared source of truth
+            during emergencies.</p>
+        </div>
+        <div class="info-item bg-danger">
+          <h3 class="status-danger"><i class="fas fa-people-group"></i> Rescue Team Dispatch</h3>
+          <p>Upon Danger level, the rescue team receives an immediate alert with the latest water level and sensor
+            location for faster dispatch and response.</p>
+        </div>
+      </div>
+      <div class="notice" style="margin-top:1.1rem;transform:translateZ(18px);">
+        <i class="fas fa-phone-volume"></i> <strong>DRRMO Coordination Hotline:</strong> 0920-617-8343 · 0995-495-4798
+        · (044) 761 3199
+      </div>
+      <p class="notice" style="margin-top:.8rem;transform:translateZ(18px);"><i class="fas fa-file-shield"></i> A
+        coordination memorandum with the DRRMO is included in the <a href="#references"
+          style="color:#1f6fe0;font-weight:700;">References</a> section to formalize the alarm-to-response workflow.</p>
+    </div>
+  </section>
+
+  <!-- ====== WARNING LIGHT & BUZZER ====== -->
+  <section class="dashboard-grid" style="margin-top:2rem;">
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-lightbulb"></i> Warning Light &amp; Buzzer · Automatic Alerts</div>
+      <div class="info-grid">
+        <div class="info-item">
+          <h3><i class="fas fa-lightbulb" style="color:#f39c12;"></i> Warning Light</h3>
+          <p>The warning light blinks amber at <strong>Warning</strong> level and turns solid red at
+            <strong>Danger</strong> level so users can easily notice the alert even from a distance.</p>
+        </div>
+        <div class="info-item">
+          <h3><i class="fas fa-volume-high" style="color:#1f6fe0;"></i> Audible Buzzer</h3>
+          <p>A buzzer sounds short intermittent beeps at Warning level and a continuous loud alarm at Danger level. It
+            can be silenced while the visual alert remains active.</p>
+        </div>
+        <div class="info-item">
+          <h3><i class="fas fa-volume-xmark" style="color:#5a7b9e;"></i> Silence Control</h3>
+          <p>Users can silence the buzzer using the <strong>Silence</strong> button. The warning light and on-screen
+            alert remain visible until the water level returns to Safe.</p>
+        </div>
+      </div>
+      <p class="notice" style="margin-top:1.1rem;"><i class="fas fa-circle-exclamation"></i> The warning light and
+        buzzer are activated automatically based on the real-time sensor data and are also triggered during the
+        <strong>Test Alarm</strong> demonstrations.</p>
+    </div>
+  </section>
+
+  <!-- ====== MOBILE APPLICATION + DEMO VIDEO ====== -->
+  <section class="dashboard-grid" id="mobile" style="margin-top:2rem;">
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-mobile-screen"></i> Mobile Application · Accessible &amp; Convenient
+      </div>
+      <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center;justify-content:center;">
+        <div class="phone-mock">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-app-header"><i class="fas fa-droplet"></i> AGAP-TUBIG App</div>
+            <div class="phone-notif" id="phoneNotif">
+              <b><i class="fas fa-triangle-exclamation"></i> Warning Alert</b>
+              <span>Water level rising · 42 cm. Prepare go-bag.</span>
+            </div>
+            <div class="phone-content">
+              <div class="phone-stat"><span>Water level</span><b>42 cm</b></div>
+              <div class="phone-stat"><span>Status</span><b style="color:#c97d0e;">Warning</b></div>
+              <div class="phone-stat"><span>Sensor</span><b>AGP-01</b></div>
+              <div class="phone-stat"><span>Updated</span><b>just now</b></div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:260px;">
+          <h3 style="color:#123f86;margin-bottom:.4rem;"><i class="fas fa-bell"></i> App Notifications</h3>
+          <p style="font-size:.88rem;color:#47658c;">The mobile app automatically receives notifications whenever the
+            water level changes, especially when it reaches <strong>Warning</strong> or <strong>Danger</strong> level,
+            so users are immediately informed and can prepare.</p>
+          <div class="notice" style="margin-top:.8rem;"><i class="fas fa-circle-info"></i> Notifications are delivered
+            through the app and can be paired with SMS alerts for users who registered their mobile number.</div>
+        </div>
+      </div>
+
+      <div class="card-header" style="margin-top:2rem;"><i class="fas fa-video"></i> Video Demonstration</div>
+      <div class="video-frame">
+        <div class="video-placeholder">
+          <i class="fas fa-play-circle"></i>
+          <strong>AGAP-TUBIG Innovation Demo</strong>
+          <span style="font-size:.8rem;opacity:.8;">Replace this placeholder with your actual video demonstration
+            file or embed link.</span>
+          <span style="font-size:.75rem;opacity:.6;">Suggested: upload <em>demo.mp4</em> and use
+            &lt;video controls src="demo.mp4"&gt;&lt;/video&gt;</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CHAT WITH BARANGAY ====== -->
+  <section class="dashboard-grid" id="chat" style="margin-top:2rem;">
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-comments"></i> Chat with Barangay · Direct Messaging</div>
+      <div class="chat-box">
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-msg barangay">Kumusta! Ito ang Barangay Assistance channel. Paano ka namin matutulungan?
+            <span class="chat-meta">Barangay · now</span>
+          </div>
+        </div>
+        <div class="chat-typing" id="chatTyping">Barangay is typing…</div>
+        <div class="chat-input-row">
+          <input id="chatInput" type="text" placeholder="Type your message to the barangay…"
+            aria-label="Message to barangay" />
+          <button class="btn btn-primary" id="chatSend" style="padding:.6rem 1rem;"><i
+              class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
+      <p class="notice" style="margin-top:.9rem;"><i class="fas fa-circle-info"></i> Messages are sent to the barangay
+        help desk. This demo simulates the reply; in production, messages are routed to barangay staff.</p>
+    </div>
+  </section>
+
+  <!-- ====== AI-ASSISTED SEARCH ====== -->
+  <section class="dashboard-grid" id="ai" style="margin-top:2rem;">
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-robot"></i> AI-Assisted Search · System &amp; Flood Updates</div>
+      <div class="ai-search-row">
+        <input id="aiInput" type="text" placeholder="Search: water level meaning, flood updates, safety tips…"
+          aria-label="AI search" />
+        <button class="btn btn-primary" id="aiSearchBtn"><i class="fas fa-magnifying-glass"></i> Search</button>
+      </div>
+      <div class="ai-results" id="aiResults">
+        <div class="ai-result"><strong>Try asking</strong><span>“What does Warning level mean?” · “Safe level range” ·
+          “Flood update near evacuation center” · “What to prepare during warning?”</span></div>
+      </div>
+      <p class="ai-disclaimer"><i class="fas fa-circle-info"></i> AI-assisted search provides guidance based on the
+        system's knowledge base and references. Always follow official DRRMO advisories during emergencies.</p>
+    </div>
+  </section>
+
+  <!-- ====== SUPPORTING REFERENCES ====== -->
+  <section class="dashboard-grid" id="references" style="margin-top:2rem;">
+    <div class="card wide-card">
+      <div class="card-header"><i class="fas fa-file-shield"></i> Supporting Memorandums &amp; References</div>
+      <div class="ref-list">
+        <div class="ref-item"><b>MDRRMO Advisory on Water-Level Classification</b> — Basis for Safe, Warning, and
+          Danger thresholds (0–29 cm, 30–59 cm, 60 cm+).</div>
+        <div class="ref-item"><b>Barangay Memorandum on Alarm &amp; Evacuation Protocol</b> — Defines automatic alarm
+          activation, warning light, and buzzer behavior.</div>
+        <div class="ref-item"><b>DRRMO Coordination Memorandum</b> — Formalizes the alarm-to-response workflow between
+          the system and the DRRMO/rescue team.</div>
+        <div class="ref-item"><b>Historical Flood Records</b> — Used to validate the warning and danger thresholds
+          against actual local flood events.</div>
+        <div class="ref-item"><b>Sensor Calibration Records</b> — Documents the raw-value-to-centimeter conversion and
+          threshold verification.</div>
+      </div>
+      <p class="notice" style="margin-top:1rem;"><i class="fas fa-circle-info"></i> These documents serve as the
+        official basis for the information and safety indicators presented on the website and mobile app.</p>
+    </div>
+  </section>
+
+  <!-- ====== HOTLINES ====== -->
   <section class="dashboard-grid" style="margin-top:2rem;">
     <div class="card" id="hotlines" style="grid-column:span 2;">
       <div class="card-header"><i class="fas fa-phone-volume"></i> Emergency Hotlines</div>
@@ -1181,28 +2158,37 @@
         <div><strong>911</strong><span>National emergency hotline</span></div>
       </div>
       <div class="hotline"><i class="fas fa-building-shield"></i>
-        <div><strong>Local DRRMO</strong><span> Mobile Number: 0920-617-8343 | 0995-495-4798 | Telephone Number: (044) 761 3199</span></div>
+        <div><strong>Local DRRMO</strong><span> Mobile Number: 0920-617-8343 | 0995-495-4798 | Telephone Number: (044)
+            761 3199</span></div>
       </div>
       <div class="hotline"><i class="fas fa-fire-extinguisher"></i>
-        <div><strong>BFP / Fire Station</strong><span>Mobile Number: 0906-269-5766 | Telephone Number: (044) 802-5015</span></div>
+        <div><strong>BFP / Fire Station</strong><span>Mobile Number: 0906-269-5766 | Telephone Number: (044)
+            802-5015</span></div>
       </div>
       <div class="hotline"><i class="fas fa-user-shield"></i>
         <div><strong>PNP</strong><span> Mobile Number: 0998-598-5390 | 0956-069-1309</span></div>
       </div>
     </div>
+
+    <!-- ====== EVACUATION ====== -->
     <div class="card" id="evacuation" style="grid-column:span 2;">
       <div class="card-header"><i class="fas fa-person-shelter"></i> Evacuation Information</div>
       <div class="notice" style="transform:translateZ(18px);"><strong>Designated Evacuation Center</strong><br>
         Paombong Evacuation Center is located at Brgy. Poblacion, Paombong, Bulacan.</div>
       <div class="notice" style="margin-top:.8rem;transform:translateZ(18px);"><i class="fas fa-route"></i>
-        <strong>Evacuation Route</strong></a><br>
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d246836.37825585902!2d120.49993018671873!3d14.835446200000009!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x339651bb15f1adcb%3A0xef4d26160f5ea1a5!2sPaombong%20MDRRMO%20Operation%20Center!5e0!3m2!1sen!2sph!4v1791803091058!5m2!1sen!2sph" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <strong>Evacuation Route</strong><br>
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d246836.37825585902!2d120.49993018671873!3d14.835446200000009!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x339651bb15f1adcb%3A0xef4d26160f5ea1a5!2sPaombong%20MDRRMO%20Operation%20Center!5e0!3m2!1sen!2sph!4v1791803091058!5m2!1sen!2sph"
+          width="600" height="450" style="border:0;max-width:100%;" allowfullscreen="" loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"></iframe>
       </div>
+    </div>
   </section>
 
   <div class="footer"><i class="fas fa-database" style="margin-right:.4rem;"></i> data from Supabase · connected via
-    real-time websocket</div>
+    real-time websocket · AGAP-TUBIG v2.0</div>
 
+  <!-- ====== LOGIN MODAL ====== -->
   <div class="login-modal" id="loginModal" aria-hidden="true">
     <div class="login-panel">
       <div class="login-head">
@@ -1246,9 +2232,174 @@
         saveProfile = $('saveProfile'), demoProfile = $('demoProfile'), loginMessage = $('loginMessage'),
         tank = $('tank'), water = $('water'), tankPct = $('tankPct'), tankPill = $('tankPill');
 
-      // Track last inserted ID to avoid duplicate updates
+      // ---------- NEW ELEMENTS ----------
+      const alarmBanner = $('alarmBanner'), alarmIcon = $('alarmIcon'), alarmTitle = $('alarmTitle'), alarmSub = $('alarmSub'),
+        silenceAlarm = $('silenceAlarm'), testAlarm = $('testAlarm'), testWarning = $('testWarning'), testDanger = $('testDanger'), clearAlarm = $('clearAlarm'),
+        humanWaterFill = $('humanWaterFill'), humanWaterLine = $('humanWaterLine'), humanLevelLabel = $('humanLevelLabel'),
+        humanRiskText = $('humanRiskText'), humanPill = $('humanPill');
+
       let lastInsertedId = null;
       let realtimeConnected = false;
+      let currentStatus = 'safe';
+      let currentLevelM = 0;
+      let alarmSilenced = false;
+
+      // ---------- AUDIO (buzzer) via Web Audio API ----------
+      let audioCtx = null;
+      let buzzerInterval = null;
+      let buzzerOsc = null;
+      let buzzerGain = null;
+
+      function getAudioCtx() {
+        if (!audioCtx) {
+          try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) { audioCtx = null; }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume().catch(() => { }); }
+        return audioCtx;
+      }
+
+      function stopBuzzer() {
+        if (buzzerInterval) { clearInterval(buzzerInterval); buzzerInterval = null; }
+        if (buzzerOsc) {
+          try { buzzerOsc.stop(); } catch (_) { }
+          buzzerOsc.disconnect();
+          buzzerOsc = null;
+        }
+        if (buzzerGain) { buzzerGain.disconnect(); buzzerGain = null; }
+      }
+
+      function playBuzzer(mode) {
+        stopBuzzer();
+        if (alarmSilenced) return;
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        if (mode === 'danger') {
+          // continuous loud alarm
+          buzzerOsc = ctx.createOscillator();
+          buzzerGain = ctx.createGain();
+          buzzerOsc.type = 'square';
+          buzzerOsc.frequency.value = 880;
+          buzzerGain.gain.value = 0.12;
+          buzzerOsc.connect(buzzerGain).connect(ctx.destination);
+          buzzerOsc.start();
+        } else if (mode === 'warning') {
+          // short intermittent beeps
+          let on = false;
+          buzzerInterval = setInterval(() => {
+            if (alarmSilenced) { stopBuzzer(); return; }
+            const c = getAudioCtx();
+            if (!c) return;
+            if (!on) {
+              const o = c.createOscillator();
+              const g = c.createGain();
+              o.type = 'triangle';
+              o.frequency.value = 660;
+              g.gain.value = 0.08;
+              o.connect(g).connect(c.destination);
+              o.start();
+              o.stop(c.currentTime + 0.18);
+            }
+            on = !on;
+          }, 700);
+        }
+      }
+
+      // ---------- ALARM UI ----------
+      function setAlarmUI(status, levelM, percent) {
+        currentStatus = status;
+        currentLevelM = levelM;
+        const s = String(status || '').toLowerCase();
+        if (s.includes('danger')) {
+          alarmBanner.className = 'alarm-banner show danger';
+          alarmIcon.className = 'fas fa-triangle-exclamation';
+          alarmTitle.textContent = '🚨 DANGER · Critical water level';
+          alarmSub.textContent = `Water level ${(levelM * 100).toFixed(0)} cm · Evacuate immediately · DRRMO notified`;
+          playBuzzer('danger');
+        } else if (s.includes('warning')) {
+          alarmBanner.className = 'alarm-banner show warning';
+          alarmIcon.className = 'fas fa-bell';
+          alarmTitle.textContent = '⚠️ WARNING · Water level rising';
+          alarmSub.textContent = `Water level ${(levelM * 100).toFixed(0)} cm · Prepare go-bag · DRRMO on standby`;
+          playBuzzer('warning');
+        } else {
+          alarmBanner.className = 'alarm-banner';
+          alarmIcon.className = 'fas fa-bell';
+          alarmTitle.textContent = 'WARNING · Water level rising';
+          alarmSub.textContent = 'Automatic alarm activated · DRRMO notified';
+          stopBuzzer();
+        }
+      }
+
+      function clearAlarmUI() {
+        alarmBanner.className = 'alarm-banner';
+        stopBuzzer();
+      }
+
+      silenceAlarm.addEventListener('click', () => {
+        alarmSilenced = true;
+        stopBuzzer();
+        alarmSub.textContent = 'Alarm silenced · Visual alert remains active';
+      });
+
+      testAlarm.addEventListener('click', () => {
+        alarmSilenced = false;
+        setAlarmUI('warning', 0.42, 42);
+      });
+
+      testWarning.addEventListener('click', () => {
+        alarmSilenced = false;
+        setAlarmUI('warning', 0.42, 42);
+        // update phone notification demo
+        const pn = $('phoneNotif');
+        if (pn) {
+          pn.className = 'phone-notif';
+          pn.innerHTML = '<b><i class="fas fa-triangle-exclamation"></i> Warning Alert</b><span>Water level rising · 42 cm. Prepare go-bag.</span>';
+        }
+      });
+
+      testDanger.addEventListener('click', () => {
+        alarmSilenced = false;
+        setAlarmUI('danger', 0.72, 72);
+        const pn = $('phoneNotif');
+        if (pn) {
+          pn.className = 'phone-notif danger';
+          pn.innerHTML = '<b><i class="fas fa-circle-exclamation"></i> Danger Alert</b><span>Critical water level · 72 cm. Evacuate immediately!</span>';
+        }
+      });
+
+      clearAlarm.addEventListener('click', () => {
+        alarmSilenced = false;
+        clearAlarmUI();
+      });
+
+      // ---------- 3D HUMAN MODEL ----------
+      function updateHumanModel(levelM, percent, status) {
+        const levelCm = levelM * 100;
+        // human model: total height ~230px; water fill relative to 230px
+        const fillPct = Math.min(100, Math.max(0, (percent)));
+        const fillHeight = (fillPct / 100) * 230; // px from bottom
+        humanWaterFill.style.height = fillPct + '%';
+        humanWaterLine.style.bottom = fillPct + '%';
+
+        humanLevelLabel.textContent = `Water level: ${levelCm.toFixed(1)} cm (${levelM.toFixed(2)} m)`;
+
+        const s = String(status || '').toLowerCase();
+        let pillClass = 'pill-safe', label = 'Safe', risk = '';
+        if (s.includes('danger')) {
+          pillClass = 'pill-danger'; label = 'Danger';
+          risk = 'Critical risk — water is above the typical adult waist level. Immediate evacuation is advised.';
+        } else if (s.includes('warning')) {
+          pillClass = 'pill-warning'; label = 'Warning';
+          risk = 'Moderate risk — water may reach knee-to-thigh level. Prepare to evacuate and avoid walking through floodwaters.';
+        } else {
+          risk = 'Low risk — water is below knee level. Continue monitoring the water level and local advisories.';
+        }
+        humanPill.className = 'status-pill ' + pillClass;
+        humanPill.textContent = label;
+        humanRiskText.textContent = risk;
+        humanWaterFill.style.background = s.includes('danger') ? 'rgba(231,76,60,.32)' : s.includes('warning') ? 'rgba(243,156,18,.30)' : 'rgba(31,111,224,.28)';
+        humanWaterLine.style.background = s.includes('danger') ? 'linear-gradient(90deg,transparent,#e74c3c,transparent)' : s.includes('warning') ? 'linear-gradient(90deg,transparent,#f39c12,transparent)' : 'linear-gradient(90deg,transparent,#1f6fe0,transparent)';
+      }
 
       function formatTime(iso) {
         if (!iso) return '—';
@@ -1306,6 +2457,8 @@
         if (cardBg) statusCard.classList.add(cardBg);
         statusCard.style.borderLeftColor = statusColor;
         setTank(percent, status);
+        updateHumanModel(levelM, percent, status);
+        setAlarmUI(status, levelM, percent);
       }
 
       // ---------- user profile ----------
@@ -1329,18 +2482,30 @@
         const phone = $('userPhone').value.trim(), address = $('userAddress').value.trim();
         if (!phone || !address) { loginMessage.textContent = 'Mobile number and address are required.'; loginMessage.style.color = '#bc2c2c'; return; }
         localStorage.setItem('agapTubigProfile', JSON.stringify({
-          phone, address, name: $('userName').value.trim(), email: $('userEmail').value.trim(), smsAlerts: true, updatedAt: new Date().toISOString()
+          phone, address, name: $('userName').value.trim(), email: $('userEmail').value.trim(), smsAlerts: true, pushAlerts: true, updatedAt: new Date().toISOString()
         }));
         renderProfile();
-        loginMessage.textContent = 'Profile saved. SMS alert registration is ready.'; loginMessage.style.color = '#1c8b3c';
+        loginMessage.textContent = 'Profile saved. SMS and push alert registration is ready.'; loginMessage.style.color = '#1c8b3c';
       });
       demoProfile.addEventListener('click', () => {
-        localStorage.setItem('agapTubigProfile', JSON.stringify({ phone: '09123456789', address: 'Demo Barangay', name: 'Demo User', email: '', smsAlerts: true }));
+        localStorage.setItem('agapTubigProfile', JSON.stringify({ phone: '09123456789', address: 'Demo Barangay', name: 'Demo User', email: '', smsAlerts: true, pushAlerts: true }));
         renderProfile();
         loginMessage.textContent = 'Demo profile loaded.'; loginMessage.style.color = '#1c8b3c';
       });
 
-      // ---------- chart + history ----------
+      // ---------- TAB SWITCHING ----------
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.tab;
+          document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
+          const panel = $('tab-' + target);
+          if (panel) panel.classList.add('active');
+        });
+      });
+
+      // ---------- CHART + HISTORY ----------
       let waterChart = null;
       function renderHistory(records) {
         if (!records.length) { historyBody.innerHTML = '<tr><td colspan="6" class="text-muted">No history available.</td></tr>'; return; }
@@ -1379,7 +2544,7 @@
         });
       }
 
-      // ---------- data loading ----------
+      // ---------- DATA LOADING ----------
       async function loadData() {
         try {
           const response = await fetch(restUrl, { headers: { apikey: supabaseKey, Authorization: "Bearer " + supabaseKey } });
@@ -1400,7 +2565,6 @@
       // ---------- REAL-TIME SUBSCRIPTION ----------
       function subscribeToRealtime() {
         console.log('🔌 Connecting to Supabase Real-Time...');
-
         const channel = supabaseClient
           .channel('water_levels_realtime')
           .on(
@@ -1408,25 +2572,16 @@
             { event: 'INSERT', schema: 'public', table: 'water_levels' },
             (payload) => {
               console.log('🔔 NEW DATA RECEIVED FROM SUPABASE:', payload.new);
-
-              // Prevent duplicate processing
               if (payload.new.id === lastInsertedId) return;
               lastInsertedId = payload.new.id;
-
-              // 1. Instantly update the dashboard with the new record
               updateDashboard([payload.new]);
-
-              // 2. Refresh the history table and chart in the background
               loadData();
-
-              // 3. Flash the LIVE indicator
               updateTimeBadge.style.background = '#d4f7dc';
               setTimeout(() => { updateTimeBadge.style.background = ''; }, 500);
             }
           )
           .subscribe((status, err) => {
             console.log('📡 Realtime status:', status);
-
             if (status === 'SUBSCRIBED') {
               realtimeConnected = true;
               console.log('✅ SUBSCRIBED — real-time updates active!');
@@ -1434,8 +2589,6 @@
             } else if (status === 'CHANNEL_ERROR') {
               realtimeConnected = false;
               console.error('❌ Realtime channel error:', err);
-              console.error('   → Did you enable Replication for water_levels in Supabase?');
-              console.error('   → Database → Replication → supabase_realtime → toggle water_levels ON');
             } else if (status === 'TIMED_OUT') {
               realtimeConnected = false;
               console.warn('⏱ Realtime timed out, will retry...');
@@ -1444,11 +2597,10 @@
               console.warn('🔌 Realtime channel closed');
             }
           });
-
         return channel;
       }
 
-      // ---------- 3D tilt on cards ----------
+      // ---------- 3D TILT ON CARDS ----------
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (!reduce) {
         document.querySelectorAll('.card').forEach(card => {
@@ -1464,11 +2616,123 @@
         });
       }
 
-      // ---------- start ----------
+      // ---------- CHAT ----------
+      const chatMessages = $('chatMessages'), chatInput = $('chatInput'), chatSend = $('chatSend'), chatTyping = $('chatTyping');
+      function nowTime() { return new Date().toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' }); }
+      function addChatMessage(text, from) {
+        const div = document.createElement('div');
+        div.className = 'chat-msg ' + (from === 'user' ? 'user' : 'barangay');
+        div.innerHTML = `${text}<span class="chat-meta">${from === 'user' ? 'You' : 'Barangay'} · ${nowTime()}</span>`;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+      function barangayReply(userText) {
+        chatTyping.classList.add('show');
+        setTimeout(() => {
+          chatTyping.classList.remove('show');
+          const lower = userText.toLowerCase();
+          let reply = 'Salamat sa mensahe. Natanggap na ito ng barangay help desk. Kami ay tutugon sa lalong madaling panahon.';
+          if (lower.includes('evac') || lower.includes('evacuation')) {
+            reply = 'Para sa evacuation, ang designated center ay ang Paombong Evacuation Center sa Brgy. Poblacion. Sundin ang evacuation route sa website at hintayin ang DRRMO instructions.';
+          } else if (lower.includes('safe') || lower.includes('safe level')) {
+            reply = 'Ang Safe level ay 0–29 cm. Kapag umabot sa 30–59 cm, Warning na; 60 cm pataas ay Danger. I-monitor ang live dashboard para sa updates.';
+          } else if (lower.includes('rescue') || lower.includes('tulong')) {
+            reply = 'Kung kailangan ng rescue, tumawag agad sa 911 o sa DRRMO hotline 0920-617-8343 / 0995-495-4798. Ibigay ang eksaktong lokasyon at bilang ng tao.';
+          } else if (lower.includes('warning')) {
+            reply = 'Kapag Warning level, maghanda ng go-bag, i-monitor ang SMS at app notifications, at maging handa sa evacuation. Ang alarm ay awtomatikong tumutunog.';
+          }
+          addChatMessage(reply, 'barangay');
+        }, 1100);
+      }
+      function sendChat() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+        addChatMessage(text, 'user');
+        chatInput.value = '';
+        barangayReply(text);
+      }
+      chatSend.addEventListener('click', sendChat);
+      chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); sendChat(); } });
+
+      // ---------- AI-ASSISTED SEARCH ----------
+      const aiInput = $('aiInput'), aiSearchBtn = $('aiSearchBtn'), aiResults = $('aiResults');
+      const knowledgeBase = [
+        {
+          keys: ['safe', 'safe level', 'safe range', 'meaning'],
+          title: 'Safe Level (0–29 cm)',
+          text: 'The water level is within the normal channel. No immediate risk. Basis: below the warning threshold set during sensor calibration with barangay officials. Continue monitoring and stay informed.'
+        },
+        {
+          keys: ['warning', 'warning level', 'warning meaning'],
+          title: 'Warning Level (30–59 cm)',
+          text: 'Water is rising and may become hazardous. Prepare a go-bag, secure belongings, monitor SMS and app alerts, and be ready to evacuate. The warning light blinks amber and the buzzer sounds short beeps.'
+        },
+        {
+          keys: ['danger', 'danger level', 'critical'],
+          title: 'Danger Level (60 cm and above)',
+          text: 'Critical water level. Life-threatening flooding is possible. Evacuate immediately when instructed. The warning light turns solid red and the buzzer sounds a continuous loud alarm. DRRMO is notified automatically.'
+        },
+        {
+          keys: ['flood update', 'flood', 'update', 'latest'],
+          title: 'Flood Updates',
+          text: 'Check the live dashboard for the latest water level and status. For official flood updates, follow the MDRRMO advisories and the barangay announcements. You can also message the barangay through the Chat section.'
+        },
+        {
+          keys: ['prepare', 'go bag', 'go-bag', 'essentials'],
+          title: 'What to Prepare During Warning',
+          text: 'Prepare a go-bag with water, food, flashlight, batteries, first-aid kit, important documents, medicines, and a power bank. Monitor alerts and be ready to evacuate when instructed.'
+        },
+        {
+          keys: ['evacuation', 'evacuate', 'evacuation center'],
+          title: 'Evacuation Information',
+          text: 'The designated evacuation center is the Paombong Evacuation Center at Brgy. Poblacion, Paombong, Bulacan. Follow the evacuation route on the website and wait for DRRMO instructions.'
+        },
+        {
+          keys: ['drrmo', 'coordination', 'rescue'],
+          title: 'DRRMO Coordination',
+          text: 'At Warning or Danger level, the system automatically coordinates with the MDRRMO and rescue team through SMS and push notifications. DRRMO hotlines: 0920-617-8343, 0995-495-4798, (044) 761 3199.'
+        },
+        {
+          keys: ['notification', 'app', 'mobile', 'push'],
+          title: 'App Notifications',
+          text: 'The mobile app automatically receives push notifications whenever the water level changes, especially at Warning or Danger level. SMS alerts can also be enabled after logging in with your mobile number and address.'
+        },
+        {
+          keys: ['human model', '3d human', 'visual'],
+          title: '3D Human Model',
+          text: 'The 3D human model on the dashboard shows the water level relative to a human figure so users can easily understand the possible risks. Hover over the model to pause its rotation.'
+        }
+      ];
+      function runAiSearch(query) {
+        const q = query.toLowerCase().trim();
+        aiResults.innerHTML = '';
+        if (!q) {
+          aiResults.innerHTML = '<div class="ai-result"><strong>Try asking</strong><span>“What does Warning level mean?” · “Safe level range” · “Flood update near evacuation center” · “What to prepare during warning?”</span></div>';
+          return;
+        }
+        const matches = knowledgeBase.filter(item => item.keys.some(k => q.includes(k) || k.includes(q)));
+        if (matches.length === 0) {
+          aiResults.innerHTML = `<div class="ai-result"><strong>No exact match found</strong><span>Try keywords like <b>safe level</b>, <b>warning</b>, <b>danger</b>, <b>flood update</b>, <b>evacuation</b>, <b>DRRMO</b>, or <b>notification</b>. You can also chat with the barangay for direct assistance.</span></div>`;
+          return;
+        }
+        matches.forEach(m => {
+          const div = document.createElement('div');
+          div.className = 'ai-result';
+          div.innerHTML = `<strong><i class="fas fa-robot"></i> ${m.title}</strong><span>${m.text}</span>`;
+          aiResults.appendChild(div);
+        });
+      }
+      aiSearchBtn.addEventListener('click', () => runAiSearch(aiInput.value));
+      aiInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); runAiSearch(aiInput.value); } });
+
+      // ---------- START ----------
       renderProfile();
       loadData();                    // Immediate first load
       subscribeToRealtime();         // Real-time listener
-      setInterval(loadData, 3000);   // ⚡ Fast fallback poll every 3 seconds
+      setInterval(loadData, 3000);   // Fast fallback poll every 3 seconds
+
+      // init human model with placeholder
+      updateHumanModel(0, 0, 'safe');
 
     })();
   </script>
